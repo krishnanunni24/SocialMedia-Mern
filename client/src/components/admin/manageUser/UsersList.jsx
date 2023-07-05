@@ -7,15 +7,11 @@ function UsersList() {
 
   const columns = [
     { 
-      name: 'firstname', 
-      selector:row=>row.firstname,
+      name: 'name', 
+      selector:row=>row.name,
       width: 130 
     },
-    {
-    name: 'lastname', 
-    selector:row=>row.lastname,
-    width: 130 
-  },
+    
     { 
       name: 'username',
       selector:row=>row.username,

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { uploadPost } from "../../../actions/UploadAction";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import UploadImageInput from "./uploadImageInput";
+import UploadImageInput from "../Img/uploadImageInput";
 import FileErrAlert from "./FileErrAlert";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
@@ -59,7 +59,7 @@ function Modal(props) {
     data.append("image", uploadfile);
     data.append("caption", caption);
     data.append("userId", userId);
-
+    console.log("postdata",data)
     try {
       dispatch(uploadPost(data));
       setIsModalOpen(!isModalOpen);

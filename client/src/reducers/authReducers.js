@@ -160,6 +160,30 @@ const authReducer = (
         authData: updatedAuthDataFollow,
       };
       
+      case "UPDATE_PROFILE_STARTED":
+        return {
+          ...state,
+          loading: true,
+        };
+
+      case "UPDATE_PROFILE_SUCCESS":
+        console.log(action.data)
+        return {
+          ...state,
+          usernameExists: false,
+          phoneExists: false,
+          emailExists: false,
+          loading: false,
+          error: false,
+          authData: action.data,
+        };
+
+        case "UPDATE_PROFILE_FAILED":
+        return {
+          ...state,
+          loading: false,
+          error: true,
+        };
 
     default:
       return state;

@@ -1,5 +1,6 @@
 import { toast } from "react-toastify";
 import * as UserApi from "./../api/UserRequests";
+
 export const fetchFollowing = (id) => async (dispatch) => {
   dispatch({ type: "FETCH_FOLLOWING_START" });
   try {
@@ -38,8 +39,12 @@ export const fetchPosts = (userId,page) => async (dispatch) => {
       });
     }
   } catch (err) {
-    dispatch({ type: "FETCH_POSTS_FAILED" });
-      console.log("cleaerd",err)
+    dispatch({ type: "FETCH_POSTS_FAILED" ,})
+      console.log("cleaerd",err.response.data.expired)
+      if(err.response.data.expired){
+        localStorage.clear()
+      }
+
     throw err;
   }
 };
@@ -60,7 +65,6 @@ export const fetchUserPosts = (userId)=> async (dispatch) => {
   dispatch({type:"FETCH_USER_POSTS_STARTED"})
   try{
    let response = await UserApi.FetchUserPosts(userId)
-   console.log(response,"response")
    if(response.data.empty){
    dispatch({type:"FETCH_USER_POSTS_SUCCESS",data:[]})
   }else{
@@ -114,3 +118,30 @@ export const savePost = (data) => async (dispatch) => {
     console.error(err);
   }
 };
+
+export const fetchUser = (userId) => async (dispatch) => {
+  console.log("userID",userId)
+  console.log("fetching users")
+  dispatch({type:"FETCH_USER_STARTED"})
+  try{
+    const response = await UserApi.FetchUser(userId)
+    const data = response.data.data
+    if (data)
+    dispatch({type:"FETCH_USER_SUCCESS",payload:data})
+    return data
+  }catch(err){
+    dispatch({type:"FETCH_USER_FAILED"})
+    console.error(err)
+  }
+}
+
+export const sendMessage =(data)=> async (dispatch)=>{
+  try{
+  const response = await UserApi.SendMessage(data)
+  console.log(response)
+  }catch(err){
+  console.error(err)
+
+  }
+}
+

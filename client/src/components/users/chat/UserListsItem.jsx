@@ -1,13 +1,15 @@
-const UserListItem = () => {
+const UserListItem = ({user,onUserClick}) => {
   return (
     <li>
       <a
-        href="#"
+        onClick={()=>{
+          onUserClick(user)
+        }}
         className="flex items-center py-3 px-4 space-x-3 hover:bg-gray-100 dark:hover:bg-gray-700"
       >
         <div className="w-12 h-12 rounded-full relative flex-shrink-0">
           <img
-                  src="https://source.unsplash.com/150x150/?portrait?3"
+                  src={user?.profilePicture}
                   alt=""
             className="absolute h-full rounded-full w-full"
           />
@@ -15,10 +17,9 @@ const UserListItem = () => {
         </div>
         <div className="flex-1 min-w-0 relative text-gray-500">
           <h4 className="text-black font-semibold dark:text-white">
-            David Peterson
+            {user?.username}
           </h4>
           <span className="absolute right-0 top-1 text-xs">Sun</span>
-          <p className="truncate">Esmod tincidunt ut laoreet</p>
         </div>
       </a>
     </li>

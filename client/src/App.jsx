@@ -32,7 +32,7 @@ function App() {
           element={user && token ? <Navigate to="../" /> : <Auth />}
         />
         <Route
-          path="/profile"
+          path="/profile/:userId"
           element={user && token ? <Profile /> : <Navigate to="../auth" />}
         />
         <Route

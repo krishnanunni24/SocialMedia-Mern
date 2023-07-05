@@ -21,10 +21,29 @@ export const blockUser = async (req, res) => {
   try {
     const userId = req.body.id;
     const blocked = req.body.blocked;
+
+    if(blocked){
+            // Create a new BlockedUser entry
+            const blockedUser = await BlockedUsersModel.create({
+              userId: userId,
+            });
+      
+            
+            console.log(blockedUser, "blockedUser");
+    }else{
+      // Remove the BlockedUser entry if unblocking
+      const deletedBlockedUser = await BlockedUsersModel.findOneAndDelete({
+        userId: userId,
+      });
+
+      console.log("User unblocked");
+    }
+    
     const user = await UserModel.findOneAndUpdate(
       { _id: userId },
       { $set: { isBlocked: blocked } }
     );
+
     console.log(user, "user");
     if (user) {
       return res.status(200).json({ user });

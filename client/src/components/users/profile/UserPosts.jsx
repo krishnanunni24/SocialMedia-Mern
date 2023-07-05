@@ -3,13 +3,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchUserPosts } from '../../../actions/UserActions'
 import ListPosts from '../postList/ListPosts'
 
-function UserPosts() {
+function UserPosts({userId}) {
     const dispatch = useDispatch()
-    const user=useSelector((state)=>state.authReducer.authData) 
     const posts = useSelector((state)=>state.userReducer.userPosts)
     useEffect(()=>{
-    dispatch(fetchUserPosts(user._id))
-    },[])
+    dispatch(fetchUserPosts(userId))
+    },[userId])
 
   return (
     <>

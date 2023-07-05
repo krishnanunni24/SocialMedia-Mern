@@ -172,14 +172,14 @@ export const deletePost = async (req, res) => {
       userId: userId,
     });
 
-    try{
-    await UserModel.findOneAndUpdate(
-      { _id: userId },
-      { $inc: { posts: -1 } }
-    )
-    }catch(err){
- console.error(err)
- return res.status(404).json({message:"user invalid"})
+    try {
+      await UserModel.findOneAndUpdate(
+        { _id: userId },
+        { $inc: { posts: -1 } }
+      );
+    } catch (err) {
+      console.error(err);
+      return res.status(404).json({ message: "user invalid" });
     }
 
     return res.status(200).json({ message: "successfully deleted" });
@@ -210,12 +210,10 @@ export const savePost = async (req, res) => {
     }
 
     await savedPosts.save();
-    return res
-      .status(200)
-      .json({
-        message: `Successfully ${saved ? "saved" : "unsaved"} the post`,
-        saved,
-      });
+    return res.status(200).json({
+      message: `Successfully ${saved ? "saved" : "unsaved"} the post`,
+      saved,
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: err.message });
@@ -271,14 +269,159 @@ export const likePost = async (req, res) => {
     }
 
     await LikedPost.save();
-    return res
-      .status(200)
-      .json({
-        message: `Successfully ${Liked ? "saved" : "unsaved"} the post`,
-        Liked,
-      });
+    return res.status(200).json({
+      message: `Successfully ${Liked ? "saved" : "unsaved"} the post`,
+      Liked,
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: err.message });
   }
 };
+
+export const fetchUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const data = await UserModel.findOne({ _id: userId }).select(
+      "-uid -password"
+    );
+    if (data) {
+      return res.status(200).json({ message: "fetched user", data });
+    } else {
+      return res.status(404).json({ message: "fetch failed, Invalid user" });
+    }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json(err);
+  }
+};
+
+
+export const updateUser = async (req, res) => {
+  console.log("updating user....");
+  try {
+    const { userId } = req.params;
+    const {username,about,phone} = req.body
+    const image = req.file?.path;
+    const updateData={};
+
+    //check if data is same as the existing userdata
+    const User = await UserModel.findOne({_id:userId})
+    if (username !== User.username) updateData.username=username
+    if (about !== User.about){ 
+      console.log("update about")
+      updateData.about = about
+    }
+    if(phone!== User.phone) updateData.phone = phone
+    if (image) updateData.profilePicture = image;
+    
+
+
+      // Check if user already exists
+      const existingUser = await UserModel.findOne({
+        $or: [{ username:updateData.username }, { phone: Number(updateData.phone) }],
+      }).select("_id username phone");
+  
+      if (existingUser) {
+        if (existingUser.username === updateData.username) {
+          return res
+            .status(400)
+            .json({ message: "Username already exists", username: true });
+        }else if (existingUser.phone === updateData.phone) {
+          return res
+            .status(400)
+            .json({ message: "Phone number already exists", phone: true });
+        }
+      }
+
+      
+    // Update the user data in the user model using the provided userId
+
+    const userUpdated = await UserModel.findOneAndUpdate({ _id: userId }, updateData, {
+      new: true,
+    });
+
+    if (!userUpdated) {
+      console.log("user not found");
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(200).json({ message: "User updated successfully", userUpdated });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const searchUsers =async (req,res) =>{
+ console.log(req.params.text)
+ try {
+  const searchText = req.params.text.toLowerCase(); // Convert search text to lowercase
+
+  // Perform search operation based on searchText
+  if(searchText){
+
+    const users = await UserModel.find(
+      { username: { $regex: `^${searchText}`, $options: 'i' } },
+      { username: 1, profilePicture: 1, _id: 1 }
+    ).lean();
+    console.log(users)
+   if(users.length > 0){
+
+     res.status(200).json({users})
+   }else{
+    res.status(404).json(
+      {
+        message:"no users found",
+    }
+    )
+   }
+   
+  }else{
+    res.status(200).json("no text")
+  }
+} catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Internal Server Error' });
+}
+ 
+}
+
+export const searchFollowingUsers =async (req,res) => {
+  const currentUserID = req.params.userId; // Assuming the current user's ID is available in req.user.id
+  const searchText = req.params.text.toLowerCase(); // Convert search text to lowercase
+  console.log(searchText);
+ 
+  try {
+    // Find the current user's following list
+    const following = await FollowingModel.findOne({ userId: currentUserID });
+
+    if (!following) {
+      return res.status(404).json({
+        message: "Current user's following list not found",following:null,
+      });
+    }
+
+    const followingUserIDs = following.following;
+
+    // Perform the search operation based on searchText and followingUserIDs
+    const users = await UserModel.find(
+      {
+        _id: { $in: followingUserIDs }, // Filter users based on the followingUserIDs
+        username: { $regex: `^${searchText}`, $options: "i" }, // Match usernames based on the search text
+      },
+      { username: 1, profilePicture: 1, _id: 1 }
+    ).lean();
+
+    if (users.length > 0) {
+      res.status(200).json({ users });
+    } else {
+      res.status(404).json({
+        message: "No users found",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+
+}

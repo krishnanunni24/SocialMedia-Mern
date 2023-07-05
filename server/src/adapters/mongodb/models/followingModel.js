@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const followingSchema = mongoose.Schema(
   {
-        userId: {
+      userId: {
       type: String,
       required:true
     },

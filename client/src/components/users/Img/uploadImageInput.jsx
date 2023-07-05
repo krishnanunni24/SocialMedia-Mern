@@ -1,6 +1,6 @@
 import React from 'react'
 
-function uploadImageInput({handleImageUpload}) {
+function uploadImageInput({handleImageUpload,profilePic}) {
   return (
     <>
     

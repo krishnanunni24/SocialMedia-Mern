@@ -6,6 +6,7 @@ import SavedPostsModel from "../../mongodb/models/savedPostsModel.js";
 import LikeModel from "../../mongodb/models/likesModel.js";
 
 export const postUpload = async (req, res) => {
+  console.log("postreq",req.body)
   const post = {
     userId: req.body.userId,
     image: req.file.path,
@@ -31,6 +32,7 @@ export const postUpload = async (req, res) => {
       return res.status(400).json({ message: "post Error" });
     }
   } catch (err) {
+    console.error(err)
     return res.status(500).json(err);
   }
 };

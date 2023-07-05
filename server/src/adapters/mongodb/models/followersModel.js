@@ -2,17 +2,16 @@ import mongoose from "mongoose";
 
 const followersSchema = mongoose.Schema(
   {
-        userId: {
+    userId: {
       type: String,
-      required:true
+      required: true,
     },
     followers: [],
-},
-{
-
-    timestamp:true,
-}
+  },
+  {
+    timestamp: true,
+  }
 );
 
-const FollowersModel = mongoose.model("followers",followersSchema);
+const FollowersModel = mongoose.model("followers", followersSchema);
 export default FollowersModel;

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { followUser, unfollowUser } from '../../../actions/UserActions';
+import { Link } from 'react-router-dom';
+import FollowButton from '../buttons/FollowButton';
 
 function User({person}) {
     const dispatch = useDispatch()
@@ -26,8 +28,8 @@ function User({person}) {
       };
   return (
 
-       <li className="py-3 sm:py-4">
-                <div className="flex items-center space-x-4">
+       <Link to={`/profile/${person._id}`} className="py-3 sm:py-4">
+                <div className="flex items-center space-x-4 my-3">
                     <div className="flex-shrink-0">
                         <img className="w-8 h-8 rounded-full" src={person.profilePicture} alt="User"/>
                     </div>
@@ -39,12 +41,9 @@ function User({person}) {
                             {person.username}   
                         </p>
                     </div>
-                    <button onClick={handleFollow} className="bg-accent text-white font-normal w-20 px-2 hover:bg-blue-700 py-2 rounded-md ">
-                   {following? "unfollow": "follow"}
-                
-                  </button>
+                    <FollowButton following={following} handleFollow={handleFollow}/>
                 </div>
-            </li>
+            </Link>
   
   )
 }

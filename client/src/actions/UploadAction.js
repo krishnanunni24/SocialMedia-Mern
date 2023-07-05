@@ -16,3 +16,21 @@ export const uploadPost = (data) => async (dispatch) => {
   }
 };
 
+
+export const updateProfile = (Data,userId) => async (dispatch) => {
+  dispatch({type:"UPDATE_PROFILE_STARTED"})
+  try{
+   const response = await UploadApi.updateUserData(Data,userId)
+ if(response){
+  console.log(response.data.userUpdated)
+  dispatch({type:"UPDATE_PROFILE_SUCCESS",data:response.data.userUpdated})
+ }
+  }catch(error){
+    console.error(error)
+    if (error.response && (error.response.data.username || error.response.data.email)) {
+      dispatch({ type: "AUTH_CREDENTIAL_EXISTS", exists: error.response.data });
+    } else {
+      dispatch({ type:   "UPDATE_PROFILE_FAILED"});
+    }
+  }
+}

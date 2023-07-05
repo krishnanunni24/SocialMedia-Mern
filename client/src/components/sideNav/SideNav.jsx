@@ -7,21 +7,34 @@ import { Link, useNavigate } from "react-router-dom";
 import ProfileCard from "./ProfileCard";
 import ModalButton from "../users/createPost/ModalButton";
 import { useDispatch } from "react-redux";
-import { logout } from "../../actions/AuthActions"
+import { logout } from "../../actions/AuthActions";
 import Modal from "../users/createPost/Modal";
+import OffCanvasSearchNav from "./offCanvasSearch/offCanvasSearchNav";
+import { useDisclosure } from "@mantine/hooks";
 
 const SideNav = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [opened, { open, close }] = useDisclosure(false);
+  
+  const toggleSidebar = () => {
+    setIsSearchOpen(!isSearchOpen);
+  };
   function handleLogout() {
     dispatch(logout(navigate));
-    navigate("/auth")
+    navigate("/auth");
   }
 
   function ModalButtonOnclick() {
+    console.log("open modal")
     setIsModalOpen(true);
+  }
+
+  const closeDrawer = ()=>{
+    setIsSearchOpen(false)
+    close()
   }
 
   const menus = [
@@ -33,20 +46,32 @@ const SideNav = () => {
   ];
 
   return (
+    <>
     <div>
       <div
-        className="bg-white z-10 md:sticky md:top-0 md:bottom-0 shadow-md border-t-2  max-md:left-0 max-md:bottom-0 md:border-e-2 fixed w-full md:min-h-screen flex
-        lg:gap-5 md:py-10 lg:w-72 sm:flex-col md:w-16 
-        duration-500 text-black-100"
+        className={`text-black-100 fixed z-10 flex w-full border-t-2 bg-white  shadow-md duration-500 max-md:bottom-0 max-md:left-0 sm:flex-col md:sticky md:bottom-0
+        md:top-0 md:min-h-screen md:w-16 md:border-e-2 md:py-10 
+       ${isSearchOpen ? "" : "lg:w-72 lg:gap-5"}`}
       >
-        <ProfileCard />
-        <div className="flex justify-between w-full py-2 md:flex-col md:gap-5 bg-white px-3 rounded-lg">
+        <ProfileCard isSearchOpen={isSearchOpen} />
+        <div className="flex w-full justify-between rounded-lg bg-white px-3 py-2 md:flex-col md:gap-5">
           {menus?.map((menu, i) =>
             menu?.name === "Create" ? (
               <div key={i} className="hover:bg-secondary hover:text-accent">
-                <ModalButton onClick={ModalButtonOnclick} menu={menu} />
+                <ModalButton
+                  open={ModalButtonOnclick}
+                  menu={menu}
+                  isSearchOpen={isSearchOpen}
+                />
               </div>
-              
+            ) : menu?.name === "Search" ? (
+              <div onClick={toggleSidebar} key={i} className="hover:bg-secondary hover:text-accent">
+                <ModalButton
+                  menu={menu}
+                  isSearchOpen={isSearchOpen}
+                  open={open}
+                />
+              </div>
             ) : (
               <Link
                 to={menu?.link}
@@ -54,11 +79,11 @@ const SideNav = () => {
                 key={i}
                 className={` ${
                   menu?.margin && "mt-5"
-                } group flex justify-center md:justify-start items-center text-sm  gap-3.5 font-medium p-2 hover:bg-secondary hover:text-accent`}
+                } group flex items-center justify-center gap-3.5 p-2  text-sm font-medium hover:bg-secondary hover:text-accent md:justify-start`}
               >
                 <div>{React.createElement(menu?.icon, { size: "20" })}</div>
                 <h2
-                  className={`hidden md:block whitespace-pre ${"md:opacity-100  overflow-hidden"}`}
+                  className={`hidden whitespace-pre md:block ${"overflow-hidden  md:opacity-100"}`}
                 >
                   {menu?.name}
                 </h2>
@@ -74,7 +99,12 @@ const SideNav = () => {
           isModalOpen={isModalOpen}
         />
       )}
+     
     </div>
+     {isSearchOpen && (
+      <OffCanvasSearchNav open={open} close={closeDrawer} opened={opened} setIsSearchOpen={setIsSearchOpen}/>
+      )}
+      </>
   );
 };
 

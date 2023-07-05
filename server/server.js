@@ -3,7 +3,6 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import dotenv from "dotenv"
 import session from 'express-session';
-import jwt from 'jsonwebtoken';
 
 dotenv.config()
 
@@ -37,7 +36,9 @@ import AuthRoute from "./src/adapters/express/routes/authRoute.js"
 import AdminRoute from './src/adapters/express/routes/adminRoute.js';
 import UploadRoute from "./src/adapters/express/routes/uploadRoute.js"
 import UserRoute from "./src/adapters/express/routes/userRoute.js"
+import ChatRoute from "./src/adapters/express/routes/chatRoute.js"
 import verifyToken from './src/adapters/express/middlewares/authMiddleware.js';
+
 // Define your API routes here
 
 
@@ -52,5 +53,6 @@ app.use('/admin', AdminRoute);
 app.use(verifyToken)
 app.use('/upload', UploadRoute);
 app.use("/user",UserRoute)
+app.use("/chat",ChatRoute)
 
 connect();

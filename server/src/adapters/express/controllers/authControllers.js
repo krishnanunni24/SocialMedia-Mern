@@ -5,7 +5,7 @@ import AdminModel from "../../mongodb/models/adminModel.js";
 
 export const registerUser = async (req, res) => {
   try {
-    const { username, email, password, phone, firstname, lastname } = req.body;
+    const { username, email, password, phone, name } = req.body;
 
     // Check if user already exists
     const existingUser = await UserModel.findOne({
@@ -36,8 +36,7 @@ export const registerUser = async (req, res) => {
     const newUser = new UserModel({
       username,
       email,
-      firstname,
-      lastname,
+      name,
       password: hashedPassword,
       phone: Number(phone),
     });

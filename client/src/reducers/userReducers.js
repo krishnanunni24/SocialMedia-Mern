@@ -9,6 +9,7 @@ const userReducer = (
 
     savedPosts: null,
     userPosts: null,
+    userData:null,
   },
   action
 ) => {
@@ -74,6 +75,14 @@ const userReducer = (
     case "FETCH_USER_POSTS_FAILED":
       return { ...state, userPosts: null, userPostsError: true, userPostsLoading: false };
 
+
+
+     case "FETCH_USER_STARTED" :
+     return {...state,loading:true,userData:null} 
+     case "FETCH_USER_SUCCESS" :
+      return {...state,loading:false,userData:action.payload}
+     case "FETCH_USER_FAILED" :
+      return {...state,loading:false,error:true}
     default:
       return state;
   }

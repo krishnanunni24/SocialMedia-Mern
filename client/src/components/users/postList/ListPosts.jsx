@@ -1,9 +1,12 @@
 import React, { useState } from 'react'
 import PostModal from '../posts/PostModal'
+import { useSelector } from 'react-redux'
 
 function ListPosts({Posts}) {
   const [openModal,setOpenModal]=useState(false)
   const [post,setPost]=useState(null)
+ 
+  const user =useSelector((state)=>state.userReducer.userData)
 
   const handleOnClose = ()=>{
     console.log("in handleonclose")
@@ -36,7 +39,7 @@ function ListPosts({Posts}) {
           </div>
         )))}
        
-        <PostModal openModal={openModal} handleOnClose={handleOnClose} post={post}/>
+        <PostModal openModal={openModal} handleOnClose={handleOnClose} post={post} user={user}/>
       </div>
   )
 }

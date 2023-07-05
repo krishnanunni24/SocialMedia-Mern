@@ -7,9 +7,8 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logIn, signUp } from "../../../actions/AuthActions";
 import LoginWithGoogle from "../googleLogin/LoginWithGoogle";
-import { googleLogin } from "../../../api/AuthRequests";
 
-function AuthForm(props) {
+function AuthForm() {
   const {
     register,
     handleSubmit,

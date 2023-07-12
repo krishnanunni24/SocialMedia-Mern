@@ -1,43 +1,78 @@
 import React, { useEffect, useRef, useState } from "react";
-import UserListItem from "./UserListsItem";
-import MessageBubble from "./MessageBubble";
 import UserList from "./UserList";
 import RightPanel from "./RightPanel";
 import SearchUser from "./SearchUser";
 import { useSelector } from "react-redux";
 import { io } from "socket.io-client";
 import { SearchFollowingUsers } from "../../../api/UserRequests";
+import { fetchChats} from "../../../api/chatRequests";
+import useThrowAsyncError from "../../../hooks/useThrowAsyncError";
 
 const ChatComponent = () => {
-  const socket = useRef();
+const socket = useRef()
   const [searchTxt,setSearchTxt]=useState("")
-  const [noUsersExc, setNoUsersExc] = useState(null);
   const [users, setUsers] = useState([]);
   const [receiver,setReceiver]=useState(null)
-  const [sendMessage, setSendMessage] = useState(null);
-  const [receivedMessage, setReceivedMessage] = useState(null);
-
+  const [chats,setChats]=useState([])
+const throwAsyncErr =useThrowAsyncError()
   const user=useSelector((state)=>state.authReducer.authData)
   const [onlineUsers,setOnlineUsers]=useState([])
+  const [noUsersExc,setNoUsersExc]=useState(null)
+  const [sendMessage,setSendMessage]=useState(null)
+  const [chatNoftification,setChatNotification]=useState(0)
+  const [receivedMessage, setReceivedMessage] = useState(null);
+
+  useEffect(() => {
+   socket.current && socket.current.on("receive-message", (data) => {
+      setReceivedMessage(data);
+      const chatId=data.chatId;
+      setChats(chats => {
+        return chats.map(chatUser => {
+          if (chatUser._id === chatId) {
+            return {
+              ...chatUser,
+              messageCount: (chatUser.messageCount || 0) + 1
+            };
+          }
+          return chatUser;
+        });
+      })
+      console.log("message received",chatId)
+    });
+
+  }, [socket]);
+
+
   
+  useEffect(()=>{
+   console.log("chats:",chats)
+  },[chats])
   // Connect to Socket.io
   useEffect(() => {
    socket.current = io("ws://localhost:8800");
    socket.current.emit("new-user-add", user._id);
    socket.current.on("get-users", (users) => {
-    console.log("users-online:",users)
      setOnlineUsers(users);
    });
- }, [user]);  
+ }, []);  
+
+ useEffect(()=>{
+  if(!sendMessage || sendMessage === "")return
+  socket.current.emit("send-message",sendMessage)
+  console.log("message send")
+ },[sendMessage])
+
+
+
 
   useEffect(() => {
+    if (searchTxt === "") setUsers([])
     if (searchTxt) {
-      console.log("searchingusers")
+      console.log("searchingusers...")
       const searchUsers = async () => {
         try {
           const { data } = await SearchFollowingUsers(searchTxt,user._id);
           setNoUsersExc(false)
-          console.log(data)
           setUsers(data.users);
         } catch (err) {
             if(err.response && err.response.data.message === "no users found"){
@@ -51,44 +86,50 @@ const ChatComponent = () => {
     }
   }, [searchTxt]);
 
-  useEffect(()=>{
-   if(receiver){
-    fetchChat(user._id,receiver._id)
-   }
-  },[receiver])
-
-
-
- //send message
   useEffect(() => {
-    if (sendMessage !== null) {
-      socket.current.emit("send-message", sendMessage);
-    }
-  }, [sendMessage]);
+    const fetchChatData = async (userId) => {
+      try{
+
+        console.log("fetching chats...");
+        const chat = await fetchChats(userId);
+        if (chat.data) {
+          if(chats.length){
+            setChats([chats,...chat.data])
+          }else{
+            setChats(chat.data)
+          }
+        }
+      }catch(err){
+        throwAsyncErr(err);
+      }
+      return;
+      // if (chat.data) {
+      //   setCurrentChat(chat.data);
+      // } else {
+      //   setCurrentChat({ members: [userId, oppUserId] });
+      // }
+    };
+  
+    fetchChatData(user._id);
+  }, []);
+
+
+
 
 // Get the message from socket server
-useEffect(() => {
-  socket.current.on("recieve-message", (data) => {
-    setReceivedMessage(data);
-  });
-}, []);
+
+
+
+
+
 
 
   const onUserClick =(user)=>{
-  console.log("user",user)
   setReceiver(user)
   }
 
   
-  async function fetchChat(userId, oppUserId) {
-    const chat = await findChat(userId, oppUserId);
-    console.log(chat)
-    // if (chat.data) {
-    //   setCurrentChat(chat.data);
-    // } else {
-    //   setCurrentChat({ members: [userId, oppUserId] });
-    // }
-  }
+
   
   return (
     <div className="mt-8 w-full">
@@ -103,12 +144,12 @@ useEffect(() => {
 
             {/* User list */}
             
-            <UserList users={users} onUserClick={onUserClick}/>
+            <UserList users={users} onUserClick={onUserClick} chats={chats}/>
             
           </div>
 
           {/* Right panel - Chat messages */}
-           <RightPanel receiver={receiver }/>
+           <RightPanel receiver={receiver } socket={socket} setSendMessage={setSendMessage} receivedMessage={receivedMessage}/>
 
         </div>
       </div>

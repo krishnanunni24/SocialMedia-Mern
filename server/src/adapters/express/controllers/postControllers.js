@@ -6,7 +6,6 @@ import SavedPostsModel from "../../mongodb/models/savedPostsModel.js";
 import LikeModel from "../../mongodb/models/likesModel.js";
 
 export const postUpload = async (req, res) => {
-  console.log("postreq",req.body)
   const post = {
     userId: req.body.userId,
     image: req.file.path,
@@ -107,7 +106,6 @@ export const fetchPosts = async (req, res) => {
         })
         .lean()
         .exec();
-        console.log(postsWithUserDetails, "hihi",page,skip);
       if (postsWithUserDetails.length) {
         postsWithUserDetails.map((post) => {
           const userId = post.userId._id;
@@ -178,7 +176,6 @@ export const fetchLikedPosts = async (req, res) => {
     const likedPosts = await LikeModel.find({ LikedUsers: userId }).distinct(
       "postId"
     );
-    console.log(likedPosts);
     return res
       .status(200)
       .json({ message: "successfully fetched", likedPosts });

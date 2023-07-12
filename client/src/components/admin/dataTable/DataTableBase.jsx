@@ -19,6 +19,7 @@ function DataTableBase(props) {
         await dispatch(getAllUsers());
 
       } catch (error) {
+        console.error(error)
         alert(error)
       }
     };

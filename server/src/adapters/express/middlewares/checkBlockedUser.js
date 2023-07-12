@@ -1,4 +1,4 @@
-import BlockedUsersModel from "../../mongodb/models/BlockedModel";
+import BlockedUsersModel from "../../mongodb/models/blockedModel.js";
 
 const checkBlockedUser = async (req, res, next) => {
   try {
@@ -8,6 +8,7 @@ const checkBlockedUser = async (req, res, next) => {
 
     if (blockedUser) {
       // User is blocked, prevent further processing
+      console.log("Blocked User...")
       return res.status(403).json({ message: "User is blocked." });
     }
 

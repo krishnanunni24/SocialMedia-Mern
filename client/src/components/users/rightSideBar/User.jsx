@@ -28,8 +28,8 @@ function User({person}) {
       };
   return (
 
-       <Link to={`/profile/${person._id}`} className="py-3 sm:py-4">
-                <div className="flex items-center space-x-4 my-3">
+       <div className="flex gap-2 justify-between py-3 sm:py-4 ">
+                <Link to={`/profile/${person._id}`} className="flex items-center space-x-4 my-3">
                     <div className="flex-shrink-0">
                         <img className="w-8 h-8 rounded-full" src={person.profilePicture} alt="User"/>
                     </div>
@@ -41,9 +41,9 @@ function User({person}) {
                             {person.username}   
                         </p>
                     </div>
+                </Link>
                     <FollowButton following={following} handleFollow={handleFollow}/>
-                </div>
-            </Link>
+            </div>
   
   )
 }

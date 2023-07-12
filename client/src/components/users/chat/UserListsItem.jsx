@@ -1,25 +1,25 @@
-const UserListItem = ({user,onUserClick}) => {
+const UserListItem = ({ user, onUserClick }) => {
   return (
     <li>
       <a
-        onClick={()=>{
-          onUserClick(user)
+        onClick={() => {
+          onUserClick(user);
         }}
-        className="flex items-center py-3 px-4 space-x-3 hover:bg-gray-100 dark:hover:bg-gray-700"
+        className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700"
       >
-        <div className="w-12 h-12 rounded-full relative flex-shrink-0">
+        <div className="relative h-12 w-12 flex-shrink-0 rounded-full">
           <img
-                  src={user?.profilePicture}
-                  alt=""
-            className="absolute h-full rounded-full w-full"
+            src={user?.profilePicture}
+            alt=""
+            className="absolute h-full w-full rounded-full"
           />
-          <span className="absolute bg-green-500 border-2 border-white bottom-0 h-3 m-0.5 right-0 rounded-full shadow-md w-3"></span>
+          <span className="absolute bottom-0 right-0 m-0.5 h-3 w-3 rounded-full border-2 border-white bg-green-500 shadow-md"></span>
         </div>
-        <div className="flex-1 min-w-0 relative text-gray-500">
-          <h4 className="text-black font-semibold dark:text-white">
+        <div className="relative min-w-0 flex-1 text-gray-500">
+          <h4 className="font-semibold text-black dark:text-white">
             {user?.username}
           </h4>
-          <span className="absolute right-0 top-1 text-xs">Sun</span>
+          <span className="absolute right-0 top-1 text-xs bg-green-400 rounded-lg">{user?.messageCount}</span>
         </div>
       </a>
     </li>

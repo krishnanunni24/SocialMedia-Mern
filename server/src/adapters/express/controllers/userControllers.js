@@ -19,8 +19,6 @@ export const fetchFollowing = async (req, res) => {
 };
 
 export const followUser = async (req, res) => {
-  console.log(req.params.id, "followingUserId");
-  console.log(req.params.userId, "UserId");
   try {
     const userId = req.params.userId;
     const followingUserId = req.params.id;
@@ -104,13 +102,11 @@ export const unFollowUser = async (req, res) => {
 };
 
 export const reportPostUpload = async (req, res) => {
-  console.log("reporting Post....", req.body);
   try {
     let post = await PostModel.findOne({ _id: req.body.postId }).select(
       "userId"
     );
     const postUserId = post.userId;
-    console.log(postUserId, "user who posted");
     const data = {
       postId: req.body.postId,
       userId: postUserId,
@@ -137,7 +133,6 @@ export const reportPostUpload = async (req, res) => {
             reason: req.body.reason,
           });
           const updatedReport = await reportPost.save();
-          console.log(updatedReport, "updatedReport");
           return res
             .status(200)
             .json({ message: "report updated Successfull", updatedReport });
@@ -145,7 +140,6 @@ export const reportPostUpload = async (req, res) => {
       } else {
         const report = await ReportPostModel.create(data);
         if (report) {
-          console.log(report);
           return res
             .status(200)
             .json({ message: "report created Successfull", report });
@@ -161,11 +155,8 @@ export const reportPostUpload = async (req, res) => {
 };
 
 export const deletePost = async (req, res) => {
-  console.log("deletePost");
   try {
     const { userId, postId } = req.params;
-    console.log(userId, "userId");
-    console.log(postId, "postId");
 
     const response = await PostModel.findOneAndDelete({
       _id: postId,
@@ -189,7 +180,6 @@ export const deletePost = async (req, res) => {
 };
 
 export const savePost = async (req, res) => {
-  console.log("savePost");
   try {
     const { userId, postId } = req.body;
     let saved = true;
@@ -221,7 +211,6 @@ export const savePost = async (req, res) => {
 };
 
 export const likePost = async (req, res) => {
-  console.log("LikePost");
   try {
     const { userId, postId } = req.body;
     let Liked = true;
@@ -298,7 +287,6 @@ export const fetchUser = async (req, res) => {
 
 
 export const updateUser = async (req, res) => {
-  console.log("updating user....");
   try {
     const { userId } = req.params;
     const {username,about,phone} = req.body
@@ -309,7 +297,6 @@ export const updateUser = async (req, res) => {
     const User = await UserModel.findOne({_id:userId})
     if (username !== User.username) updateData.username=username
     if (about !== User.about){ 
-      console.log("update about")
       updateData.about = about
     }
     if(phone!== User.phone) updateData.phone = phone
@@ -353,7 +340,6 @@ export const updateUser = async (req, res) => {
 };
 
 export const searchUsers =async (req,res) =>{
- console.log(req.params.text)
  try {
   const searchText = req.params.text.toLowerCase(); // Convert search text to lowercase
 
@@ -364,7 +350,6 @@ export const searchUsers =async (req,res) =>{
       { username: { $regex: `^${searchText}`, $options: 'i' } },
       { username: 1, profilePicture: 1, _id: 1 }
     ).lean();
-    console.log(users)
    if(users.length > 0){
 
      res.status(200).json({users})
@@ -389,7 +374,6 @@ export const searchUsers =async (req,res) =>{
 export const searchFollowingUsers =async (req,res) => {
   const currentUserID = req.params.userId; // Assuming the current user's ID is available in req.user.id
   const searchText = req.params.text.toLowerCase(); // Convert search text to lowercase
-  console.log(searchText);
  
   try {
     // Find the current user's following list

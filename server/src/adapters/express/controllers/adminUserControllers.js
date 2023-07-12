@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import ReportPostModel from "../../mongodb/models/reportPostModel.js";
 import PostModel from "../../mongodb/models/postModel.js";
+import BlockedUsersModel from "../../mongodb/models/blockedModel.js";
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -18,6 +19,7 @@ export const getAllUsers = async (req, res) => {
 };
 
 export const blockUser = async (req, res) => {
+  console.log("block user")
   try {
     const userId = req.body.id;
     const blocked = req.body.blocked;
@@ -51,6 +53,7 @@ export const blockUser = async (req, res) => {
       return res.status(400).json({ message: "No users found" });
     }
   } catch (err) {
+    console.error(err)
     res.status(500).json({ message: err.message });
   }
 };

@@ -40,8 +40,7 @@ export const fetchPosts = (userId,page) => async (dispatch) => {
     }
   } catch (err) {
     dispatch({ type: "FETCH_POSTS_FAILED" ,})
-      console.log("cleaerd",err.response.data.expired)
-      if(err.response.data.expired){
+      if(err.response?.data?.expired){
         localStorage.clear()
       }
 
@@ -50,7 +49,6 @@ export const fetchPosts = (userId,page) => async (dispatch) => {
 };
 
 export const fetchSaved = (userId) => async (dispatch) => {
-  console.log("userId", userId);
   dispatch({ type: "FETCH_SAVED_STARTED" });
   try {
     let response = await UserApi.FetchSaved(userId);
@@ -108,7 +106,6 @@ export const savePost = (data) => async (dispatch) => {
   try {
     const response = await UserApi.SavePost(Data);
     if(response.data?.saved){
-        console.log(data.post,"post")
         dispatch({type:"SAVE_POST_SUCCESS",data:data.post})
     }else{
 
@@ -120,7 +117,6 @@ export const savePost = (data) => async (dispatch) => {
 };
 
 export const fetchUser = (userId) => async (dispatch) => {
-  console.log("userID",userId)
   console.log("fetching users")
   dispatch({type:"FETCH_USER_STARTED"})
   try{

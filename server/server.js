@@ -38,7 +38,7 @@ import UploadRoute from "./src/adapters/express/routes/uploadRoute.js"
 import UserRoute from "./src/adapters/express/routes/userRoute.js"
 import ChatRoute from "./src/adapters/express/routes/chatRoute.js"
 import verifyToken from './src/adapters/express/middlewares/authMiddleware.js';
-
+import checkBlockedUser from './src/adapters/express/middlewares/checkBlockedUser.js';
 // Define your API routes here
 
 
@@ -51,6 +51,7 @@ app.listen(port, () => {
 app.use('/auth', AuthRoute);
 app.use('/admin', AdminRoute);
 app.use(verifyToken)
+app.use(checkBlockedUser)
 app.use('/upload', UploadRoute);
 app.use("/user",UserRoute)
 app.use("/chat",ChatRoute)

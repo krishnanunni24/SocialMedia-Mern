@@ -28,7 +28,6 @@ const SideNav = () => {
   }
 
   function ModalButtonOnclick() {
-    console.log("open modal")
     setIsModalOpen(true);
   }
 

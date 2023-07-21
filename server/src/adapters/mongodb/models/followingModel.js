@@ -1,18 +1,29 @@
 import mongoose from "mongoose";
-
 const followingSchema = mongoose.Schema(
   {
-      userId: {
-      type: String,
-      required:true
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Users",
+      required: true
     },
-    following: [],
-},
-{
-
-    timestamp:true,
-}
+    following: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users"
+      }
+    ],
+    followers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users"
+      }
+    ]
+  },
+  {
+    timestamps: true
+  }
 );
+
 
 const FollowingModel = mongoose.model("Following", followingSchema);
 export default FollowingModel;

@@ -19,12 +19,12 @@ export const fetchFollowing = (id) => async (dispatch) => {
 };
 
 export const followUser = (userId, followingUserId) => async (dispatch) => {
-  UserApi.followUser(userId, followingUserId);
+ let {data} =  await UserApi.followUser(userId, followingUserId);
   dispatch({ type: "FOLLOW_USER", payload: followingUserId });
 };
 
-export const unfollowUser = (userId, unFollowingUserId) => async (dispatch) => {
-  UserApi.unfollowUser(userId, unFollowingUserId);
+export const unfollowUser = (currentUserId,unFollowingUserId) => async (dispatch) => {
+ const {data} = await UserApi.unfollowUser( unFollowingUserId,currentUserId);
   dispatch({ type: "UNFOLLOW_USER", payload: unFollowingUserId });
 };
 
@@ -62,6 +62,7 @@ export const fetchSaved = (userId) => async (dispatch) => {
 export const fetchUserPosts = (userId)=> async (dispatch) => {
   dispatch({type:"FETCH_USER_POSTS_STARTED"})
   try{
+    
    let response = await UserApi.FetchUserPosts(userId)
    if(response.data.empty){
    dispatch({type:"FETCH_USER_POSTS_SUCCESS",data:[]})
@@ -92,7 +93,6 @@ export const likePost = (data) => async (dispatch) => {
     if(response.data?.Liked){
         dispatch({type:"LIKE_POST_SUCCESS",data:data.postId})
     }else{
-        console.log(data.postId,"postId")
 
         dispatch({type:"UNLIKE_POST_SUCCESS",data:data.postId})
     }
@@ -117,7 +117,6 @@ export const savePost = (data) => async (dispatch) => {
 };
 
 export const fetchUser = (userId) => async (dispatch) => {
-  console.log("fetching users")
   dispatch({type:"FETCH_USER_STARTED"})
   try{
     const response = await UserApi.FetchUser(userId)
@@ -134,10 +133,8 @@ export const fetchUser = (userId) => async (dispatch) => {
 export const sendMessage =(data)=> async (dispatch)=>{
   try{
   const response = await UserApi.SendMessage(data)
-  console.log(response)
   }catch(err){
   console.error(err)
-
   }
 }
 

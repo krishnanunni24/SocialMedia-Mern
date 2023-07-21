@@ -5,6 +5,7 @@ const io = require("socket.io")(8800, {
 });
 
 let activeUsers = [];
+let postGroups = {}; // To store active users for each post
 
 io.on("connection", (socket) => {
   // add new User
@@ -41,5 +42,24 @@ io.on("connection", (socket) => {
     } else {
       console.log("Receiver user not found");
     }
+  });
+
+  // Join post group when a user opens a post
+  socket.on("join-post-group", (postId) => {
+    if (!postGroups[postId]) {
+      postGroups[postId] = [];
+    }
+    postGroups[postId].push(socket.id);
+    socket.join(postId);
+    console.log(`User with socket ID ${socket.id} joined post group for Post ID: ${postId}`);
+  });
+
+  // Handle comment-related events within the post group
+  socket.on("post-comment", ({data}) => {
+    const {postId}=data
+    console.log("postId:",postId)
+    console.log("data:",data)
+    // Broadcast the comment to all users in the post group
+    io.to(postGroups[postId]).emit("receive-comment", data);
   });
 });

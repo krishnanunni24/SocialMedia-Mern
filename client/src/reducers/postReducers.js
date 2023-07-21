@@ -42,7 +42,6 @@ const postReducer = (
         const uniqueData = fetchedData.filter(post => {
           return !state.posts.some(existingPost => existingPost._id === post._id);
         });
-        console.log(uniqueData,"uniqueData")
         return {
           ...state,
           posts: [...state.posts, ...uniqueData],

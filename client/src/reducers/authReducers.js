@@ -33,7 +33,6 @@ const authReducer = (
           blocked: false,
         };
       } else {
-        console.log(action.data)
         return {
           ...state,
           authData: action.data,
@@ -109,6 +108,7 @@ const authReducer = (
       };
 
     case "UNFOLLOW_USER":
+      if(state.authData.following > 0){
       const updatedAuthDataUnfollow = { ...state.authData};
       updatedAuthDataUnfollow.following += -1;
       return {
@@ -117,6 +117,9 @@ const authReducer = (
         error: false,
         authData: updatedAuthDataUnfollow,
       };
+    }else{
+      return state
+    }
 
       case "UPLOAD_SUCCESS" :
         const updatedAuthPostData = {...state.authData}
@@ -151,7 +154,6 @@ const authReducer = (
     case "FOLLOW_USER":
       const updatedAuthDataFollow = { ...state.authData };
       updatedAuthDataFollow.following += 1;
-      console.log(updatedAuthDataFollow);
       return {
         ...state,
         adminAuthData: null,
@@ -167,7 +169,6 @@ const authReducer = (
         };
 
       case "UPDATE_PROFILE_SUCCESS":
-        console.log(action.data)
         return {
           ...state,
           usernameExists: false,

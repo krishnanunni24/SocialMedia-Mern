@@ -1,5 +1,4 @@
 import React from 'react'
-import FollowRequests from './FollowRequests'
 import UserSuggestion from './UserSuggestion'
 
 function RightSideBar() {

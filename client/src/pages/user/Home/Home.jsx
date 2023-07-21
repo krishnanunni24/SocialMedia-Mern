@@ -1,5 +1,4 @@
 
-import HomeContent from "../../../components/users/home/HomeContent"
 import SideNav from "../../../components/sideNav/SideNav" 
 import PageWrapper from "../../../components/admin/PageWrapper"
 import Posts from "../../../components/users/posts/Posts"

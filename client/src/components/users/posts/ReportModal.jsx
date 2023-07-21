@@ -14,7 +14,6 @@ function ReportModal({ openModal, closeModal ,postId}) {
       const userId=useSelector((state)=>state.authReducer.authData._id)
       const handleReportSubmit = () => {
         // Handle report submission logic
-        console.log('Report submitted:', selectedReason);
         const data ={
           reason:selectedReason,
           userId:userId,

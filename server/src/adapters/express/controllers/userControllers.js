@@ -1,3 +1,4 @@
+import CommentModel from "../../mongodb/models/commentsModel.js";
 import FollowingModel from "../../mongodb/models/followingModel.js";
 import LikeModel from "../../mongodb/models/likesModel.js";
 import PostModel from "../../mongodb/models/postModel.js";
@@ -20,84 +21,66 @@ export const fetchFollowing = async (req, res) => {
 
 export const followUser = async (req, res) => {
   try {
+    console.log("req:", req.params);
     const userId = req.params.userId;
     const followingUserId = req.params.id;
 
-    let followingModel = await FollowingModel.findOne({ userId: userId });
+    await FollowingModel.findOneAndUpdate(
+      { userId: userId },
+      { $addToSet: { following: followingUserId } },
+      { upsert: true }
+    );
 
-    if (!followingModel) {
-      followingModel = new FollowingModel({ userId: userId });
-    }
+    await FollowingModel.findOneAndUpdate(
+      { userId: followingUserId },
+      { $addToSet: { followers: userId } },
+      { upsert: true }
+    );
 
-    followingModel.following.push(followingUserId);
+    await UserModel.findByIdAndUpdate(userId, { $inc: { following: 1 } });
+    await UserModel.findByIdAndUpdate(followingUserId, {
+      $inc: { followers: 1 },
+    });
 
-    await followingModel.save();
-    try {
-      await UserModel.findOneAndUpdate(
-        { _id: userId },
-        { $inc: { following: 1 } }
-      );
-
-      await UserModel.findOneAndUpdate(
-        { _id: followingUserId },
-        { $inc: { followers: 1 } }
-      );
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ message: "user not found in db" });
-    }
-
-    res
-      .status(200)
-      .json({ message: "User followed successfully", data: followingUserId });
+    return res.status(200).json({
+      message: "User followed successfully",
+      data: followingUserId,
+    });
   } catch (err) {
-    console.error("Error unfollowing user:", error);
-    return res.status(500).json({ message: "Failed to unfollow user", err });
+    console.error("Error following user:", err);
+    return res
+      .status(500)
+      .json({ message: "Failed to follow user", error: err });
   }
 };
 
 export const unFollowUser = async (req, res) => {
   try {
-    const userId = req.params.userId;
-    const followingUserId = req.params.id;
+    const userId = req.params.currentUserId;
+    const unfollowUserId = req.params.unFollowingUserId;
 
-    // Find the following document for the current user
-    let following = await FollowingModel.findOne({ userId });
-
-    if (!following) {
-      return res
-        .status(404)
-        .json({ message: "Following data not found for the user" });
-    }
-
-    // Remove the followingUserId from the following array
-    following.following = following.following.filter(
-      (id) => id !== followingUserId
+    const followingModel = await FollowingModel.findOneAndUpdate(
+      { userId: userId },
+      { $pull: { following: unfollowUserId } }
     );
 
-    // Save the updated following document
-    await following.save();
+    const followingUserFollowingModel = await FollowingModel.findOneAndUpdate(
+      { userId: unfollowUserId },
+      { $pull: { followers: userId } }
+    );
 
-    try {
-      await UserModel.findOneAndUpdate(
-        { _id: userId },
-        { $inc: { following: -1 } }
-      );
-      await UserModel.findOneAndUpdate(
-        { _id: followingUserId },
-        { $inc: { followers: -1 } }
-      );
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ message: "user not found in db" });
-    }
+    await UserModel.findByIdAndUpdate(userId, { $inc: { following: -1 } });
+    await UserModel.findByIdAndUpdate(unfollowUserId, {
+      $inc: { followers: -1 },
+    });
 
-    return res.status(200).json({ message: "User unfollowed successfully" });
-  } catch (error) {
-    console.error("Error unfollowing user:", error);
-    res
-      .status(500)
-      .json({ message: "Failed to unfollow user", data: followingUserId });
+    res.status(200).json({
+      message: "User unfollowed successfully",
+      data: unfollowUserId,
+    });
+  } catch (err) {
+    console.error("Error unfollowing user:", err);
+    res.status(500).json({ message: "Failed to unfollow user", error: err });
   }
 };
 
@@ -285,103 +268,103 @@ export const fetchUser = async (req, res) => {
   }
 };
 
-
 export const updateUser = async (req, res) => {
   try {
     const { userId } = req.params;
-    const {username,about,phone} = req.body
+    const { username, about, phone } = req.body;
     const image = req.file?.path;
-    const updateData={};
+    const updateData = {};
 
     //check if data is same as the existing userdata
-    const User = await UserModel.findOne({_id:userId})
-    if (username !== User.username) updateData.username=username
-    if (about !== User.about){ 
-      updateData.about = about
+    const User = await UserModel.findOne({ _id: userId });
+    if (username !== User.username) updateData.username = username;
+    if (about !== User.about) {
+      updateData.about = about;
     }
-    if(phone!== User.phone) updateData.phone = phone
+    if (phone !== User.phone) updateData.phone = phone;
     if (image) updateData.profilePicture = image;
-    
 
+    // Check if user already exists
+    const existingUser = await UserModel.findOne({
+      $or: [
+        { username: updateData.username },
+        { phone: Number(updateData.phone) },
+      ],
+    }).select("_id username phone");
 
-      // Check if user already exists
-      const existingUser = await UserModel.findOne({
-        $or: [{ username:updateData.username }, { phone: Number(updateData.phone) }],
-      }).select("_id username phone");
-  
-      if (existingUser) {
-        if (existingUser.username === updateData.username) {
-          return res
-            .status(400)
-            .json({ message: "Username already exists", username: true });
-        }else if (existingUser.phone === updateData.phone) {
-          return res
-            .status(400)
-            .json({ message: "Phone number already exists", phone: true });
-        }
+    if (existingUser) {
+      if (existingUser.username === updateData.username) {
+        return res
+          .status(400)
+          .json({ message: "Username already exists", username: true });
+      } else if (existingUser.phone === updateData.phone) {
+        return res
+          .status(400)
+          .json({ message: "Phone number already exists", phone: true });
       }
+    }
 
-      
     // Update the user data in the user model using the provided userId
 
-    const userUpdated = await UserModel.findOneAndUpdate({ _id: userId }, updateData, {
-      new: true,
-    });
+    const userUpdated = await UserModel.findOneAndUpdate(
+      { _id: userId },
+      updateData,
+      {
+        new: true,
+      }
+    );
 
     if (!userUpdated) {
       console.log("user not found");
       return res.status(404).json({ message: "User not found" });
     }
-    return res.status(200).json({ message: "User updated successfully", userUpdated });
+    return res
+      .status(200)
+      .json({ message: "User updated successfully", userUpdated });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
 
-export const searchUsers =async (req,res) =>{
- try {
-  const searchText = req.params.text.toLowerCase(); // Convert search text to lowercase
+export const searchUsers = async (req, res) => {
+  try {
+    const searchText = req.params.text.toLowerCase(); // Convert search text to lowercase
 
-  // Perform search operation based on searchText
-  if(searchText){
-
-    const users = await UserModel.find(
-      { username: { $regex: `^${searchText}`, $options: 'i' } },
-      { username: 1, profilePicture: 1, _id: 1 }
-    ).lean();
-   if(users.length > 0){
-
-     res.status(200).json({users})
-   }else{
-    res.status(404).json(
-      {
-        message:"no users found",
+    // Perform search operation based on searchText
+    if (searchText) {
+      const users = await UserModel.find(
+        { username: { $regex: `^${searchText}`, $options: "i" } },
+        { username: 1, profilePicture: 1, _id: 1 }
+      ).lean();
+      if (users.length > 0) {
+        res.status(200).json({ users });
+      } else {
+        res.status(404).json({
+          message: "no users found",
+        });
+      }
+    } else {
+      res.status(200).json("no text");
     }
-    )
-   }
-   
-  }else{
-    res.status(200).json("no text")
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-} catch (error) {
-  console.error(error);
-  res.status(500).json({ error: 'Internal Server Error' });
-}
- 
-}
+};
 
-export const searchFollowingUsers =async (req,res) => {
+export const searchFollowingUsers = async (req, res) => {
   const currentUserID = req.params.userId; // Assuming the current user's ID is available in req.user.id
   const searchText = req.params.text.toLowerCase(); // Convert search text to lowercase
- 
+
   try {
     // Find the current user's following list
     const following = await FollowingModel.findOne({ userId: currentUserID });
 
     if (!following) {
       return res.status(404).json({
-        message: "Current user's following list not found",following:null,
+        message: "Current user's following list not found",
+        following: null,
       });
     }
 
@@ -407,5 +390,98 @@ export const searchFollowingUsers =async (req,res) => {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
+};
 
-}
+export const getUserSuggestion = async (req, res) => {
+  try {
+    const following = await FollowingModel.findOne({
+      userId: req.params.userId,
+    });
+    const followingIds = following ? following.following : [];
+
+    const users = await UserModel.find({ _id: { $nin: followingIds } }).limit(
+      4
+    );
+
+    if (users.length > 0) {
+      return res.status(200).json({ users });
+    } else {
+      return res.status(400).json({ message: "No users found" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const fetchFollowingUsers = async (req, res) => {
+  console.log("fetching following users....");
+  try {
+    const { userId } = req.params;
+
+    const followingModel = await FollowingModel.findOne({
+      userId: userId,
+    }).populate("following", "profilePicture username");
+
+    if (followingModel) {
+      const followingUsers = followingModel.following;
+      console.log("following users:", followingUsers);
+      res
+        .status(200)
+        .json({ message: "Fetched following users", data: followingUsers });
+    } else {
+      res
+        .status(404)
+        .json({ message: "Following users not found", empty: true });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const fetchFollowersUsers = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const followersModel = await FollowingModel.findOne({
+      userId: userId,
+    }).populate("followers", "profilePicture username");
+
+    if (followersModel) {
+      const followersUsers = followersModel.followers;
+
+      res
+        .status(200)
+        .json({ message: "Fetched followers users", data: followersUsers });
+    } else {
+      res.status(404).json({ message: "Followers users not found" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const fetchComments = async (req, res) => {
+  console.log("fetching comments...");
+  try {
+    const { postId } = req.params;
+    console.log("postId:", postId);
+
+    // Fetch comments for the specified post, sorted in descending order by createdAt time
+    const comments = await CommentModel.find({ postId })
+      .sort({
+        createdAt: -1,
+      })
+      .populate("userId", "profilePicture username");
+
+    console.log("comments:", comments);
+
+    res
+      .status(200)
+      .json({ message: "Fetched comments successfully", data: comments });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch comments", error: err });
+  }
+};

@@ -20,8 +20,19 @@ const userReducer = (
       return { ...state, following: action.payload, followingLoading: false };
     case "FETCH_FOLLOWING_EMPTY":
       return { ...state, following: [] };
-    case "FOLLOW_USER":
-      return { ...state, following: [...state.following, action.payload] };
+      case "FOLLOW_USER":
+        if (state.following.length) {
+          const updatedFollowers = state.userData.followers + 1;
+          const updatedUserData = { ...state.userData, followers: updatedFollowers };
+          const updatedFollowing = [...state.following, action.payload];
+          return { ...state, userData: updatedUserData, following: updatedFollowing };
+        } else {
+          const updatedUserData = { ...state.userData, followers: 1 };
+          return { ...state, userData: updatedUserData, following: [action.payload] };
+        }
+      
+      
+      
     case "LOG_OUT":
       return {
         ...state,
@@ -31,11 +42,17 @@ const userReducer = (
         savedPosts:null,
         userPosts:null
       };
-    case "UNFOLLOW_USER":
-      return {
-        ...state,
-        following: state.following.filter((userId) => userId !== action.payload),
-      };
+      case "UNFOLLOW_USER":
+        if (state.following.length > 0) {
+          const updatedFollowing = state.following.filter((userId) => userId !== action.payload);
+          const updatedFollowers = state.userData.followers - 1;
+          const updatedUserData = { ...state.userData, followers: updatedFollowers };
+          return { ...state, userData: updatedUserData, following: updatedFollowing };
+        } else {
+          return state;
+        }
+      
+      
     case "FETCH_SAVED_STARTED":
       return { ...state, loading: true, error: null };
 

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { followUser, unfollowUser } from '../../../actions/UserActions';
 import { Link } from 'react-router-dom';
 import FollowButton from '../buttons/FollowButton';
+import UnFollowButton from '../buttons/UnFollowButton';
 
 function User({person}) {
     const dispatch = useDispatch()
@@ -16,16 +17,27 @@ function User({person}) {
 
     
       useEffect(()=>{
-      setFollowing(followingList?.includes(person._id))
-      },[followingList])
+        if(person){
+            setFollowing(followingList?.includes(person._id))
+        }
+      },[followingList,person])
+
+      useEffect(()=>{
+          console.log("following:",following)
+      },[following])
 
 
       const handleFollow = () => {
-        following
-          ? dispatch(unfollowUser(user._id,person._id))
-          : dispatch(followUser(user._id,person._id));
-        setFollowing((prev) => !prev);
+        dispatch(followUser(user._id,person._id));
+        setFollowing(true);
       };
+      
+      const handleUnFollow = () => {
+        dispatch(unfollowUser(user._id,person._id));
+        setFollowing(false);
+      };
+       
+      
   return (
 
        <div className="flex gap-2 justify-between py-3 sm:py-4 ">
@@ -42,7 +54,10 @@ function User({person}) {
                         </p>
                     </div>
                 </Link>
-                    <FollowButton following={following} handleFollow={handleFollow}/>
+                
+                  {
+                    following ?  <UnFollowButton handleUnFollow={handleUnFollow}/> : <FollowButton handleFollow={handleFollow}/> 
+                  } 
             </div>
   
   )

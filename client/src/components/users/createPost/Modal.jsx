@@ -40,8 +40,6 @@ function Modal(props) {
     const file = event.target.files[0];
 
     if (file && allowedFileTypes.includes(file.type)) {
-      console.log("no error", fileError);
-      console.log(file);
       setUploadFile(file);
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -55,11 +53,9 @@ function Modal(props) {
 
   const handlePost = () => {
     const data = new FormData();
-    console.log(uploadfile, "file");
     data.append("image", uploadfile);
     data.append("caption", caption);
     data.append("userId", userId);
-    console.log("postdata",data)
     try {
       dispatch(uploadPost(data));
       setIsModalOpen(!isModalOpen);

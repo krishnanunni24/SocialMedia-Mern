@@ -1,6 +1,6 @@
 import React from "react";
 
-function FollowButton({handleFollow,following}) {
+function FollowButton({handleFollow}) {
   return (
     <div className="flex items-center justify-center">
 
@@ -8,7 +8,7 @@ function FollowButton({handleFollow,following}) {
       onClick={handleFollow}
       className="w-20 h-10 rounded-md bg-accent px-2 py-2 font-normal text-white hover:bg-blue-700 "
     >
-      {following ? "unfollow" : "follow"}
+      Follow
     </button>
     </div>
   );

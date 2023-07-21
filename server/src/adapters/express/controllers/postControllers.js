@@ -4,6 +4,7 @@ import PostModel from "../../mongodb/models/postModel.js";
 import UserModel from "../../mongodb/models/userModel.js";
 import SavedPostsModel from "../../mongodb/models/savedPostsModel.js";
 import LikeModel from "../../mongodb/models/likesModel.js";
+import CommentModel from "../../mongodb/models/commentsModel.js";
 
 export const postUpload = async (req, res) => {
   const post = {
@@ -159,13 +160,15 @@ export const fetchUserPosts = async (req, res) => {
       timestamp: -1,
     });
 
+    console.log("userPosts:",userPosts)
+
     if (!userPosts || !userPosts?.length) {
       return res.status(200).json({ message: "User Posts empty", empty: true });
     }
     return res.status(200).json({ message: "successfully fetched", userPosts });
   } catch (err) {
     console.error(err);
-    return res.status(500).json("userPost fetching failed", err);
+    return res.status(500).json(err);
   }
 };
 
@@ -183,3 +186,27 @@ export const fetchLikedPosts = async (req, res) => {
     console.error("Error fetching liked posts:", err);
   }
 };
+
+export const postComment = async(req,res) =>{
+ try{
+  const {userId,postId,comment}=req.body
+  const newComment = new CommentModel({
+    userId,
+    postId,
+    content: comment,
+  });
+
+  // Save the new comment to the database
+  const savedComment = await newComment.save();
+  // Populate the userId field with the username and profilePicture fields from the User model
+  await savedComment.populate('userId', 'username profilePicture')
+
+  res.status(201).json({ data:savedComment });
+
+
+
+ }catch(err){
+  console.error(err)
+  return res.status(500).json(err)
+ }
+}

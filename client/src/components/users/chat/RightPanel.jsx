@@ -4,10 +4,19 @@ import { useSelector } from "react-redux";
 import UserMessage from "../message/userMessage";
 import ReceiverMessage from "../message/ReceiverMessage";
 import { createMessage, fetchMessages } from "../../../api/chatRequests";
+import { BiArrowBack } from "react-icons/bi";
 
-function RightPanel({ receivedMessage, receiver, setSendMessage }) {
+function RightPanel({
+  receivedMessage,
+  receiver,
+  setReceiver,
+  setSendMessage,
+  onlineUsers,
+  UpdateMessageStatus
+}) {
   const [newMessage, setNewMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const [userOnline, setUserOnline] = useState(false);
 
   const user = useSelector((state) => state.authReducer.authData);
 
@@ -18,7 +27,19 @@ function RightPanel({ receivedMessage, receiver, setSendMessage }) {
     } else {
       setMessages([receivedMessage]);
     }
+    
   }, [receivedMessage]);
+
+  useEffect(()=>{
+    if(!messages)return
+    const Data = {
+      status:"read",
+      userId:user._id,
+    }
+     UpdateMessageStatus(Data)
+  },[])
+
+  
 
   const handleSend = (e) => {
     if (!newMessage || !newMessage.trim()) {
@@ -33,7 +54,7 @@ function RightPanel({ receivedMessage, receiver, setSendMessage }) {
     const sendMessage = async (data) => {
       try {
         const response = await createMessage(data);
-        data.chatId = response.data.newMessage.chatId
+        data.chatId = response.data.newMessage.chatId;
         if (messages.length > 0) {
           setMessages([...messages, response.data.newMessage]);
         } else {
@@ -44,7 +65,7 @@ function RightPanel({ receivedMessage, receiver, setSendMessage }) {
       }
     };
     sendMessage(data).then(() => {
-      setSendMessage(data)
+      setSendMessage(data);
       setNewMessage("");
     });
   };
@@ -52,17 +73,11 @@ function RightPanel({ receivedMessage, receiver, setSendMessage }) {
     setNewMessage(e.target.value);
   };
 
-  // useEffect(
-  //   ()=>{
-  //    fetchMessages()
-  //   },[]
-  // )
   const getMessages = async (receiverId, userId) => {
     try {
       const response = await fetchMessages(receiverId, userId);
       const newMessages = response.data;
 
-      // Use functional update to avoid dependency on `messages` state
       setMessages(newMessages);
     } catch (err) {
       console.error(err);
@@ -76,8 +91,14 @@ function RightPanel({ receivedMessage, receiver, setSendMessage }) {
     setMessages([]);
     if (receiver) {
       getMessages(receiver._id, user._id);
+      console.log("receiverID:", receiver._id);
+      setUserOnline(onlineUsers.some((user) => user.userId === receiver._id));
     }
   }, [receiver]);
+
+  const handleBackClick = () => {
+    setReceiver(null);
+  };
 
   return (
     <div className="bg-white dark:bg-gray-800 lg:w-8/12">
@@ -92,23 +113,30 @@ function RightPanel({ receivedMessage, receiver, setSendMessage }) {
                     alt=""
                     className="absolute h-full w-full rounded-full"
                   />
-                  <span className="absolute bottom-0 right-0 m-0.5 h-3 w-3 rounded-full border-2 border-white bg-green-500 shadow-md"></span>
+                  {userOnline && (
+                    <span className="absolute bottom-0 right-0 m-0.5 h-3 w-3 rounded-full border-2 border-white bg-green-500 shadow-md"></span>
+                  )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <h4 className="font-semibold text-black dark:text-white">
                     {receiver?.username}
                   </h4>
-                  <span className="text-xs text-gray-500">Online</span>
+                  {userOnline && (
+                    <span className="text-xs text-gray-500">Online</span>
+                  )}
                 </div>
               </div>
-              <button className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500">
-                <i className="icon-material-outline-more-vert"></i>
+              <button
+                onClick={handleBackClick}
+                className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500"
+              >
+                <BiArrowBack size={30} />
               </button>
             </div>
           </div>
 
           <div className="h-[calc(80vh-250px)] w-full overflow-y-auto p-5 py-10 md:h-[calc(80vh-137px)]">
-            {messages.length &&
+            {(messages.length &&
               messages?.map((message, key) => {
                 if (message.senderId === user._id) {
                   return (
@@ -123,7 +151,8 @@ function RightPanel({ receivedMessage, receiver, setSendMessage }) {
                     />
                   );
                 }
-              })}
+              })) ||
+              ""}
           </div>
 
           <div className="border-t px-6 py-4 dark:border-gray-600">

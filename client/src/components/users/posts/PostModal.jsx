@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import PostOption from "./postOptionModal";
 import { useSelector } from "react-redux";
 import PostButtons from "./PostButtons";
-import { fetchComments, postComment } from "../../../api/PostRequests";
+import { FetchReplies, fetchComments, postComment } from "../../../api/PostRequests";
 import Comments from "../comment/Comments";
 import { io } from "socket.io-client";
 
@@ -14,9 +14,13 @@ function PostModal({ openModal, handleOnClose, post, user }) {
   const currentUser = useSelector((state) => state.authReducer.authData);
   const isUser = currentUser?._id === post?.userId;
   const [recievedComment, setReceivedComment] = useState(null);
+  const [replyData, setReplyData] = useState(null);
+  const [replies,setReplies]=useState(null)
+  const [spinner,setSpinner]=useState(false)
   const socket = useRef();
 
   useEffect(() => {
+    setReplyData(null)
     if (post) {
       socket.current = io("ws://localhost:8800");
       socket.current.emit("join-post-group", post._id);
@@ -32,14 +36,14 @@ function PostModal({ openModal, handleOnClose, post, user }) {
       });
   }, [socket]);
 
-  useEffect(()=>{
-   if(!recievedComment)return;
-   if(commentsArr.length >0){
-    setCommentsArr([recievedComment,...commentsArr])
-   }else{
-    setCommentsArr([recievedComment])
-   }
-  },[recievedComment])
+  useEffect(() => {
+    if (!recievedComment) return;
+    if (commentsArr.length > 0) {
+      setCommentsArr([recievedComment, ...commentsArr]);
+    } else {
+      setCommentsArr([recievedComment]);
+    }
+  }, [recievedComment]);
 
   useEffect(() => {
     console.log("comments:", commentsArr);
@@ -59,24 +63,65 @@ function PostModal({ openModal, handleOnClose, post, user }) {
 
   const handleSubmit = async () => {
     if (!comment || comment === "") return;
+
     const Data = {
       userId,
       postId: post._id,
       comment,
     };
+    if(replyData) Data.parentCommentId=replyData.parentCommentId
+    console.log("modified data:",Data)
     try {
       const { data } = await postComment(Data);
       console.log("postedNewComment", data);
-      socket.current.emit("post-comment", data);
-      if (commentsArr.length > 0) {
+      if(!replyData){
+        socket.current.emit("post-comment", data);
+      if (commentsArr.length > 0 ) {
         setCommentsArr((prevData) => [...prevData, data.data]);
       } else {
         setCommentsArr([data.data]);
       }
-      setComment("");
+    }else{
+      fetchReplies(data.data.parentCommentId)
+      const updated = commentsArr.map((comment) => {
+        if (comment._id === data.data.parentCommentId) {
+          return {
+            ...comment,
+            replies: [...comment.replies, data.data._id], // Add the new reply's _id to the replies array
+          };
+        } else {
+          return comment;
+        }
+      });
+      setCommentsArr(updated)
+    }
+    setComment("");
+    setReplyData(null)
+     
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const fetchReplies = async(commentId)=>{
+  try{
+  setSpinner(true)
+  const {data}= await FetchReplies(commentId)
+  setReplies(data.data)
+  console.log("replies:",data)
+  setSpinner(false)
+  }catch(err){
+    console.error(err)
+  }
+  }
+
+  const onReplyClick = (data) => {
+    console.log("CommentonREply:",data)
+    setReplyData({ parentCommentId: data._id, replyUserName: data.userId.username });
+  };
+
+  const handleReplyClose = () => {
+    setReplyData(null);
   };
 
   return (
@@ -100,7 +145,8 @@ function PostModal({ openModal, handleOnClose, post, user }) {
             />
           </div>
         </div>
-        <div className="flex-1 flex-col">
+
+        <div className="max-w-sm flex-1 flex-col">
           {/* user & option */}
           <div className="flex justify-between border-b px-2 py-1">
             <div className="flex items-center justify-center gap-2 font-semibold text-black">
@@ -128,7 +174,7 @@ function PostModal({ openModal, handleOnClose, post, user }) {
             <div className="relative space-y-3 border-t border-gray-100 p-2.5 font-normal dark:border-slate-700/40 sm:p-4">
               {commentsArr.length > 0 &&
                 commentsArr.map((comment, key) => {
-                  return <Comments comment={comment} key={key} />;
+                  return <Comments comment={comment} key={key} onReplyClick={onReplyClick} fetchReplies={fetchReplies} replies={replies?._id === comment._id ? replies : null}/>;
                 })}
             </div>
           </div>
@@ -143,13 +189,43 @@ function PostModal({ openModal, handleOnClose, post, user }) {
             </div>
             {/* add comment input */}
             <div className="flex justify-between px-2">
-              <input
-                className="peer  font-normal text-gray-900 focus:outline-none"
-                type="text"
-                placeholder="Add a Comment..."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              />
+              <div className="flex">
+                {replyData && (
+                  <div class="relative rounded-md bg-blue-300 p-2">
+                    <button
+                      onClick={handleReplyClose}
+                      className="absolute right-0 top-0 p-1 text-gray-300 hover:text-gray-800"
+                    >
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M6 18L18 6M6 6l12 12"
+                        ></path>
+                      </svg>
+                    </button>
+
+                    <span className="block text-white">
+                      @{replyData.replyUserName}
+                    </span>
+                  </div>
+                )}
+
+                <input
+                  className="peer mx-2 font-normal text-gray-900 focus:outline-none"
+                  type="text"
+                  placeholder="Add a Comment..."
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                />
+              </div>
               <button
                 onClick={handleSubmit}
                 className="rounded-lg px-1 py-2 font-semibold text-accent hover:bg-slate-100"

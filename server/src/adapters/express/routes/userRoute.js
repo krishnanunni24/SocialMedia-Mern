@@ -1,6 +1,7 @@
 import express from "express";
 import {
   deletePost,
+  fetchCommentReplies,
   fetchComments,
   fetchFollowersUsers,
   fetchFollowing,
@@ -32,6 +33,7 @@ router.get("/:userId/searchFollowing/:text",searchFollowingUsers)
 router.get("/followingUsers/:userId",fetchFollowingUsers)
 router.get("/followerUsers/:userId",fetchFollowersUsers)
 router.get("/:postId/comments",fetchComments)
+router.get("/:commentId/replies",fetchCommentReplies)
 
 router.put("/:userId/follow/:id", followUser);
 router.put("/:currentUserId/unfollow/:unFollowingUserId", unFollowUser);

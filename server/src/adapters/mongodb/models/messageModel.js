@@ -14,6 +14,11 @@ const MessageSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    status: {
+      type: String,
+      enum: ["pending", "delivered", "read"], 
+      default: "pending",
+    },
     createdAt: {
       type: Date,
       default: Date.now,

@@ -2,7 +2,6 @@ import ChatModel from "../../mongodb/models/chatModel.js";
 import MessageModel from "../../mongodb/models/messageModel.js";
 
 export const fetchChat = async (req, res) => {
-  console.log("fetching Chats...");
   try {
     const chat = await ChatModel.find({ users: { $in: [req.params.userId] } })
       .sort({ updatedAt: -1 })
@@ -23,7 +22,6 @@ export const fetchChat = async (req, res) => {
 };
 
 export const fetchMessages = async (req, res) => {
-  console.log("fetching messages");
   try {
     const chat = await ChatModel.findOne({
       users: { $all: [req.params.userId, req.params.receiverId] },
@@ -33,7 +31,6 @@ export const fetchMessages = async (req, res) => {
       const messages = await MessageModel.find({
         chatId: chat._id,
       });
-      console.log("Messages",messages)
       return res.status(200).json(messages);
     } else {
       return res.status(400).json({ message: "no chats found", data: null });
@@ -45,9 +42,7 @@ export const fetchMessages = async (req, res) => {
 };
 
 export const createMessage = async (req, res) => {
-  console.log("Creating a new message...");
   try {
-    console.log(req.body);
     const { receiverId, senderId, message } = req.body;
     const chat = await ChatModel.findOne({
       users: { $all: [receiverId,senderId] },
@@ -69,8 +64,6 @@ export const createMessage = async (req, res) => {
       savedChat.latestMessage = newMessage._id;
       await savedChat.save();
 
-      console.log("New chat created:", savedChat);
-      console.log("New message saved:", newMessage);
 
       res
         .status(200)
@@ -85,8 +78,6 @@ export const createMessage = async (req, res) => {
       chat.latestMessage = newMessage._id;
       await chat.save();
 
-      console.log("Existing chat found:", chat);
-      console.log("New message saved:", newMessage);
 
       res
         .status(200)
@@ -97,3 +88,47 @@ export const createMessage = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const updateMessageStatus=async(req,res)=>{
+  const{userId,status}=req.body
+  try{
+   const chats = await ChatModel.find({users:userId}).select("_id")
+   console.log("fetched chats ids :",chats)
+   const filter = {
+    chatId: { $in: chats }, // Find messages with chatIds in the provided array
+    senderId: { $ne: userId }, // Find messages where senderId is not equal to userId
+    status:{$ne:"read"}
+  };
+
+  const update = {
+    $set: {status}
+  };
+await MessageModel.updateMany(filter,update).then((response)=>{
+  console.log(response)
+  return res.status(200).json({message:"updated to delivered"})
+})
+
+
+  }catch(err){
+  console.log(err)
+  return res.status(500).json(err)
+  }
+}
+
+export const getChatNotification =async(req,res)=>{
+ const {userId,chatId}=req.params
+ console.log(req.params)
+ try{
+  const filter = {
+    chatId,
+    senderId:{$ne:userId}
+    ,status:{$ne:"read"}
+  }
+  const count = await MessageModel.countDocuments(filter);
+  console.log("count:",count)
+  return res.status(200).json(count || 0)
+ }catch(err){
+  console.error(err)
+  return res.status(500).json(err)
+ }
+}

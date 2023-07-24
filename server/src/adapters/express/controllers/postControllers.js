@@ -32,15 +32,15 @@ export const postUpload = async (req, res) => {
       return res.status(400).json({ message: "post Error" });
     }
   } catch (err) {
-    console.error(err)
+    console.error(err);
     return res.status(500).json(err);
   }
 };
 
 export const fetchPosts = async (req, res) => {
-  const {userId,page }= req.params;
-  const limit =2
-  const skip = page*limit
+  const { userId, page } = req.params;
+  const limit = 2;
+  const skip = page * limit;
   try {
     const following = await FollowingModel.findOne({ userId }).select(
       "following"
@@ -59,7 +59,7 @@ export const fetchPosts = async (req, res) => {
           model: UserModel,
         })
         .skip(skip)
-       .limit(limit)
+        .limit(limit)
 
         .lean()
         .exec();
@@ -77,7 +77,7 @@ export const fetchPosts = async (req, res) => {
         return res.status(200).json({ postsWithUserDetails });
       } else {
         const postsWithUserDetails = await PostModel.find()
-        .skip(skip)
+          .skip(skip)
           .limit(limit)
           .sort({ createdAt: -1 })
           .populate({
@@ -97,7 +97,7 @@ export const fetchPosts = async (req, res) => {
       }
     } else {
       const postsWithUserDetails = await PostModel.find()
-      .skip(skip)
+        .skip(skip)
         .limit(limit)
         .sort({ createdAt: -1 })
         .populate({
@@ -160,7 +160,7 @@ export const fetchUserPosts = async (req, res) => {
       timestamp: -1,
     });
 
-    console.log("userPosts:",userPosts)
+    console.log("userPosts:", userPosts);
 
     if (!userPosts || !userPosts?.length) {
       return res.status(200).json({ message: "User Posts empty", empty: true });
@@ -187,26 +187,28 @@ export const fetchLikedPosts = async (req, res) => {
   }
 };
 
-export const postComment = async(req,res) =>{
- try{
-  const {userId,postId,comment}=req.body
-  const newComment = new CommentModel({
-    userId,
-    postId,
-    content: comment,
-  });
+export const postComment = async (req, res) => {
+  try {
+    const { userId, postId, comment, parentCommentId } = req.body;
+   
+    
+    const newComment = new CommentModel({
+      userId,postId,content:comment,parentCommentId
+    });
 
-  // Save the new comment to the database
-  const savedComment = await newComment.save();
-  // Populate the userId field with the username and profilePicture fields from the User model
-  await savedComment.populate('userId', 'username profilePicture')
+     if(parentCommentId){
+     const parent= await CommentModel.findOne({_id:parentCommentId})
+     parent.replies.push(newComment._id)
+     parent.save()
+     }
+    // Save the new comment to the database
+    const savedComment = await newComment.save();
+    // Populate the userId field with the username and profilePicture fields from the User model
+    await savedComment.populate("userId", "username profilePicture");
 
-  res.status(201).json({ data:savedComment });
-
-
-
- }catch(err){
-  console.error(err)
-  return res.status(500).json(err)
- }
-}
+    res.status(201).json({ data: savedComment });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json(err);
+  }
+};

@@ -19,7 +19,13 @@ const commentSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Comments',
     default: null,
-  }
+  },
+  replies:[
+    {
+      type:mongoose.Schema.Types.ObjectId,
+      ref:'Comments',
+    }
+  ]
  
 },
 {

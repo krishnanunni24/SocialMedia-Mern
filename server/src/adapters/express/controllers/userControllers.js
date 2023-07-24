@@ -469,11 +469,11 @@ export const fetchComments = async (req, res) => {
     console.log("postId:", postId);
 
     // Fetch comments for the specified post, sorted in descending order by createdAt time
-    const comments = await CommentModel.find({ postId })
-      .sort({
-        createdAt: -1,
-      })
-      .populate("userId", "profilePicture username");
+    const comments = await CommentModel.find({ postId, parentCommentId: null })
+    .sort({
+      createdAt: -1,
+    })
+    .populate("userId", "profilePicture username");
 
     console.log("comments:", comments);
 
@@ -485,3 +485,30 @@ export const fetchComments = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch comments", error: err });
   }
 };
+
+export const fetchCommentReplies = async (req, res) => {
+  console.log("fetching comment Replies...");
+  try {
+    const { commentId } = req.params;
+
+    // Fetch comments for the specified post, sorted in descending order by createdAt time
+    const replies = await CommentModel.findById(commentId).populate({
+      path: 'replies',
+      populate: {
+        path: 'userId',
+        select: 'profilePicture username',
+      },
+    }).select("replies _id");
+
+    console.log("comments:", replies);
+
+    res
+      .status(200)
+      .json({ message: "Fetched replies successfully", data: replies });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch comments", error: err });
+  }
+};
+
+

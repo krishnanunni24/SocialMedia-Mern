@@ -5,7 +5,7 @@ function ReceiverMessage({message,receiver}) {
     <div>
         
        {/* opposite user message */}
-       <div className="flex gap-3">
+       <div className="flex gap-2 my-3">
         <img
           src={receiver?.profilePicture}
           alt=""

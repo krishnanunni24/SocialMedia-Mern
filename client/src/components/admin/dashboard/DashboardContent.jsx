@@ -23,6 +23,7 @@ import {
   FetchNewUsersStats,
   FetchTotal,
 } from "../../../api/UserListRequest";
+import useThrowAsyncError from "../../../hooks/useThrowAsyncError";
 
 const useStyles = createStyles((theme) => ({
   root: {
@@ -151,6 +152,8 @@ function DashboardContent() {
   const [totalData, setTotalData] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const [data, setData] = useState([]);
+  const throwAsyncErr = useThrowAsyncError();
+
 
   const fetchNewUsersStats = async () => {
     try {
@@ -162,6 +165,7 @@ function DashboardContent() {
       });
     } catch (err) {
       console.error(err);
+      throwAsyncErr(err)
     }
   };
 
@@ -175,7 +179,10 @@ function DashboardContent() {
         return hasData ? prevData : [...prevData, newData];
       });
     } catch (err) {
+
       console.error(err);
+      throwAsyncErr(err)
+
     }
   };
 
@@ -190,6 +197,8 @@ function DashboardContent() {
       });
     } catch (err) {
       console.error(err);
+      throwAsyncErr(err)
+
     }
   };
 
@@ -204,6 +213,8 @@ function DashboardContent() {
       });
     } catch (err) {
       console.error(err);
+      throwAsyncErr(err)
+
     }
   };
 
@@ -214,6 +225,8 @@ function DashboardContent() {
       setTotalData(data);
     } catch (err) {
       console.error(err);
+      throwAsyncErr(err)
+
     }
   };
 

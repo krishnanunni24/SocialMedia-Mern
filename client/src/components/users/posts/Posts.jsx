@@ -19,19 +19,17 @@ const Posts = () => {
   const uploading = useSelector((state) => state.postReducer.uploading);
   const userId = useSelector((state) => state.authReducer.authData._id);
 
-  const [openPostModal,setOpenPostModal]=useState(false)
-  const [postInfo,setPostInfo]=useState(null)
+  const [openPostModal, setOpenPostModal] = useState(false);
+  const [postInfo, setPostInfo] = useState(null);
 
-  const handleCommentClick=(post)=>{ 
-      setOpenPostModal(true)
-      setPostInfo(post)
-  }
+  const handleCommentClick = (post) => {
+    setOpenPostModal(true);
+    setPostInfo(post);
+  };
 
-  const handleOnModalClose=()=>{
-    setOpenPostModal(false)
-   }
-  
-
+  const handleOnModalClose = () => {
+    setOpenPostModal(false);
+  };
 
   const [page, setPage] = useState(0);
 
@@ -110,11 +108,10 @@ const Posts = () => {
               className="relative mt-5 rounded-md bg-white shadow-md"
             >
               <div className="flex justify-between px-2 py-2">
-                <Link className="flex items-center justify-center gap-2 font-semibold text-black"
-                            to={`/profile/${post.userId}`}
-
+                <Link
+                  className="flex items-center justify-center gap-2 font-semibold text-black"
+                  to={`/profile/${post.userId}`}
                 >
-                 
                   <span>
                     {(
                       <img
@@ -136,7 +133,11 @@ const Posts = () => {
               </div>
 
               <PostImage image={post.image} />
-              <PostButtons post={post} userId={userId}  handleCommentClick={handleCommentClick}/>
+              <PostButtons
+                post={post}
+                userId={userId}
+                handleCommentClick={handleCommentClick}
+              />
               <div className="flex items-center">
                 <span className="mx-2 text-sm font-semibold">
                   {post.user.username}
@@ -150,7 +151,12 @@ const Posts = () => {
             </div>
           )
       )}
-      <PostModal openModal={openPostModal} handleOnClose={handleOnModalClose} user={postInfo?.user} post={postInfo}/>
+      <PostModal
+        openModal={openPostModal}
+        handleOnClose={handleOnModalClose}
+        user={postInfo?.user}
+        post={postInfo}
+      />
       <div ref={observerTarget}></div>
     </div>
   );

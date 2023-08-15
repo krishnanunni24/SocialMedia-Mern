@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchReportedPosts } from "../../../actions/ReportListActions";
 import ReportedPostModal from "./ReportedPostModal";
+import ResultEmpty from "../../empty/ResultEmpty";
 function ReportsList() {
   const dispatch = useDispatch();
   const [report,setReport]=useState(null)
@@ -24,6 +25,9 @@ function ReportsList() {
     <div className="w-full">
       <div className="container my-12 mx-auto px-4 md:px-12">
         <h1 className="text-lg  font-semibold">Reported Posts</h1>
+        {reports?.length  < 1 || !report}{
+          <ResultEmpty word="Reports"/>
+        }
         <div className="flex flex-wrap -mx-1 lg:-mx-4">
           {reports?.map((report, id) => (
             <div

@@ -11,8 +11,7 @@ export const getAllUsers =()=> async(dispatch)=>{
     }
     }catch(err){
    dispatch({type:"FETCH_USERS_FAIL"})
-    console.log(err)
-    alert(err)
+    throw err
     }
 }
 

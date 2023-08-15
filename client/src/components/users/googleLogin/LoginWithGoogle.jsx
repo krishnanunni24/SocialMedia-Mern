@@ -18,7 +18,6 @@ LoginWithGoogle({setGoogleData,isSignUp,onFormSubmit}) {
       const user = result.user;
       const {uid,email,displayName}=user
       const data={uid,email,displayName}
-      console.log(data,"user")
       setGoogleData(data)
       if(!isSignUp){
         onFormSubmit(data)

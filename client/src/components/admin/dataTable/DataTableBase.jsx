@@ -2,12 +2,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import { blockUser, getAllUsers } from '../../../actions/UserListActions';
 import { useDispatch, useSelector } from 'react-redux';
+import useThrowAsyncError from '../../../hooks/useThrowAsyncError';
 
 
 function DataTableBase(props) {
     const dispatch = useDispatch()
     const  users= useSelector((state) => state.adminReducer.users);
     const [filterText, setFilterText] = useState("");
+    const throwAsyncErr = useThrowAsyncError();
 
     
     
@@ -15,17 +17,21 @@ function DataTableBase(props) {
       const blocked = !row.isBlocked;
       console.log("blocked", blocked);
       try {
-        await dispatch(blockUser(row._id, blocked));
-        await dispatch(getAllUsers());
+        await dispatch(blockUser(row._id, blocked))
+        await dispatch(getAllUsers()).then().catch((err)=>{
+        throwAsyncErr(err)
+        })
 
       } catch (error) {
         console.error(error)
-        alert(error)
+        throwAsyncErr(error)
       }
     };
     
     useEffect(() => {
-      dispatch(getAllUsers());
+      dispatch(getAllUsers()).then().catch((err)=>{
+        throwAsyncErr(err)
+        })
     }, [dispatch]);
 
     const columns = [

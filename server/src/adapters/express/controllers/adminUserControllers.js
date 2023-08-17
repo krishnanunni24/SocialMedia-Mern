@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import ReportPostModel from "../../mongodb/models/reportPostModel.js";
 import PostModel from "../../mongodb/models/postModel.js";
-import BlockedUsersModel from "../../mongodb/models/BlockedModel.js";
+import BlockedUsersModel from "../../mongodb/models/BlockedUsersModel.js";
 import LikeModel from "../../mongodb/models/likesModel.js";
 
 export const getAllUsers = async (req, res) => {

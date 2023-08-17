@@ -1,4 +1,4 @@
-import BlockedUsersModel from "../../mongodb/models/BlockedModel.js";
+import BlockedUsersModel from "../../mongodb/models/BlockedUsersModel.js";
 
 const checkBlockedUser = async (req, res, next) => {
   try {

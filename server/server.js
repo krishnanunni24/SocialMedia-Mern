@@ -31,7 +31,7 @@ app.use(session({
 app.use(cors());
 
 //routes
-import connect from './src/infrastructure/config/mongoose.js';
+import connect from './src/config/mongoose.js';
 import AuthRoute from "./src/adapters/express/routes/authRoute.js" 
 import AdminRoute from './src/adapters/express/routes/adminRoute.js';
 import UploadRoute from "./src/adapters/express/routes/uploadRoute.js"

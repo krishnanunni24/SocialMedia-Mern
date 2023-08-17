@@ -31,7 +31,6 @@ export const blockUser = async (req, res) => {
         userId: userId,
       });
 
-      console.log(blockedUser, "blockedUser");
     } else {
       // Remove the BlockedUser entry if unblocking
       const deletedBlockedUser = await BlockedUsersModel.findOneAndDelete({
@@ -46,7 +45,6 @@ export const blockUser = async (req, res) => {
       { $set: { isBlocked: blocked } }
     );
 
-    console.log(user, "user");
     if (user) {
       return res.status(200).json({ user });
     } else {
@@ -278,7 +276,6 @@ export const fetchReportedPostsDataWithDiffPercentage = async (req, res) => {
 };
 
 export const fetchReportedPosts = async (req, res) => {
-  console.log("fetching reports....");
   try {
     const reports = await ReportPostModel.find()
       .populate({
@@ -333,7 +330,6 @@ export const fetchUsersByWeek = async (req, res) => {
       }
     });
 
-    console.log(usersByDay);
   } catch (error) {
     console.error("Error fetching users added last week:", error);
   }
@@ -341,7 +337,6 @@ export const fetchUsersByWeek = async (req, res) => {
 
 export const unListPost = async (req, res) => {
   const { postId } = req.params;
-  console.log("unlisting....", postId);
   try {
     const post = await PostModel.findById(postId);
     if (!post) {
@@ -485,7 +480,6 @@ export const fetchTotal = async (req, res) => {
     const totalPosts = await PostModel.countDocuments({});
     const totalUsers = await UserModel.countDocuments({}); // Count the total number of users in the UserModel collection
     const data = { totalLikes, totalPosts, totalUsers };
-    console.log("data:",data)
     return res.status(200).json(data);
   } catch (error) {
     console.error("Error fetching total likes and total users:", error);

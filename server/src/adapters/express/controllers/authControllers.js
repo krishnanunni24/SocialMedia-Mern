@@ -129,7 +129,6 @@ export const loginWithGoogle = async (req, res) => {
       return res.status(401).json({ message: "blocked user", blocked: true });
     }
     if (user) {
-      console.log(user.uid, "uid", uid);
       const validity = await bcrypt.compare(uid, user.uid);
       if (!validity) {
         return res

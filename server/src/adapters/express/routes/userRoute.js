@@ -17,7 +17,7 @@ import {
   updateUser,
 } from "../controllers/userControllers.js";
 import { fetchLikedPosts, fetchPosts, fetchSavedPosts, fetchUserPosts } from "../controllers/postControllers.js";
-import upload from "../../../infrastructure/config/multer.js";
+import upload from "../../../config/multer.js";
 
 const router = express.Router();
 

@@ -1,6 +1,6 @@
 import express from 'express';
 import { postComment, postUpload } from '../controllers/postControllers.js';
-import upload from "../../../infrastructure/config/multer.js" 
+import upload from "../../../config/multer.js" 
 import { reportPostUpload } from '../controllers/userControllers.js';
 
 

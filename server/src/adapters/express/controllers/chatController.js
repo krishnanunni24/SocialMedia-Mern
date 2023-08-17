@@ -93,7 +93,6 @@ export const updateMessageStatus=async(req,res)=>{
   const{userId,status}=req.body
   try{
    const chats = await ChatModel.find({users:userId}).select("_id")
-   console.log("fetched chats ids :",chats)
    const filter = {
     chatId: { $in: chats }, // Find messages with chatIds in the provided array
     senderId: { $ne: userId }, // Find messages where senderId is not equal to userId

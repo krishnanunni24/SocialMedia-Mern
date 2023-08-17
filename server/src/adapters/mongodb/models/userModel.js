@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
+import dotenv from 'dotenv';
 
+dotenv.config()
 
 const UserSchema = mongoose.Schema(
   {
@@ -35,7 +37,7 @@ const UserSchema = mongoose.Schema(
     },
     profilePicture:{
       type:String,
-      default:"https://res.cloudinary.com/dcpxcesvx/image/upload/v1684902597/social-media/defaultUser_kv3x1f.jpg"
+      default: process.env.DEFAULT_PROFILE,
     },
     about: String,
     active:Boolean,

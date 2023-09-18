@@ -144,6 +144,7 @@ const ChatComponent = () => {
   // Get the message from socket server
 
   const onUserClick = (user,chatId) => {
+    console.log("chats:",chats)
     setReceiver(user);
     if(chatId){
       setChats((chats)=>{

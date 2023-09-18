@@ -30,7 +30,7 @@ function UserListItem({ user, onUserClick, onlineUsers ,chat,setChats}) {
   }, [onlineUsers,user]);
 
   useEffect(() => {  
-    if(user){
+    if(user && chat){
     fetchNotification()
     }
   }, [user]);
@@ -41,7 +41,8 @@ function UserListItem({ user, onUserClick, onlineUsers ,chat,setChats}) {
     <li>
       <a
         onClick={() => {
-          onUserClick(user,chat._id);
+          console.log("chat:",chat)
+          onUserClick(user,chat?._id);
         }}
         className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700"
       >

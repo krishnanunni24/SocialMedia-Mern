@@ -10,7 +10,7 @@ const postSchema = mongoose.Schema(
     shares:{type:Number,default:0},
     unlisted:{type:Boolean,default:false},
     image: {type:String,required:true},
-    caption:{type:String ,required:true},
+    caption:{type:String},
   },
   {
     timestamps: true,

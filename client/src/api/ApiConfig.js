@@ -1,6 +1,6 @@
 import axios from 'axios'
 import store from '../store/reduxStore';
-export const API = axios.create({ baseURL: 'http://localhost:4000' });
+export const API = axios.create({ baseURL : process.env.SERVER_BASE_URL });
 API.interceptors.request.use(
     (config) => {
       const token = localStorage.getItem('token'); // Retrieve the token from wherever it's stored

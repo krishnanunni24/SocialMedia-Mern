@@ -22,7 +22,7 @@ function PostModal({ openModal, handleOnClose, post, user }) {
   useEffect(() => {
     setReplyData(null)
     if (post) {
-      socket.current = io("ws://localhost:8800");
+      socket.current = io(process.env.SOCKET_URL);
       socket.current.emit("join-post-group", post._id);
       FetchComments(post._id);
     }

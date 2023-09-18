@@ -1,7 +1,6 @@
 // authMiddleware.js
 
 import { logout } from "../actions/AuthActions"; // Replace with the actual path to your logout action file
-import { useNavigate } from "react-router-dom";
 const excludedRoutes = ['/auth',"/"]; // Routes to exclude from triggering logout
 const authMiddleware = (store) => (next) => (action) => {
   const  token  = localStorage.getItem("token"); // Replace 'auth' with the actual name of your authentication reducer

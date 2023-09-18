@@ -1,8 +1,7 @@
 import React from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Error = ({ error }) => {
-  const navigate = useNavigate()
   const handleClick=()=>{
     localStorage.clear()
   window.location="/auth"

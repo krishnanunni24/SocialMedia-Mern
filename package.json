@@ -1,0 +1,27 @@
+{
+  "name": "social-media-mern",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install-server":"cd server && npm install",
+    "start-server":"cd server &&  npm start",
+    "install-client":"cd client && yarn install",
+    "build-client":"cd client && yarn run build",
+    "start-client":"cd client && yarn run dev",
+    "install-socket":"cd socket && npm install",
+    "start-socket":"cd socket && npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krishnanunni24/SocialMedia-mern.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/krishnanunni24/SocialMedia-mern/issues"
+  },
+  "homepage": "https://github.com/krishnanunni24/SocialMedia-mern#readme"
+}

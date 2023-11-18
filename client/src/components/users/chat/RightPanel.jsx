@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineSend } from "react-icons/ai";
 import { useSelector } from "react-redux";
-import UserMessage from "../message/userMessage";
+import UserMessage from "../message/UserMessage";
 import ReceiverMessage from "../message/ReceiverMessage";
 import { createMessage, fetchMessages } from "../../../api/ChatRequests";
 import { BiArrowBack } from "react-icons/bi";

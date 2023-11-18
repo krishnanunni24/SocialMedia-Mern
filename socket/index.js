@@ -43,7 +43,7 @@ io.on("connection", (socket) => {
     console.log("Data:", data);
     if (user) {
       io.to(user.socketId).emit("receive-message", data);
-      console.log("Message emitted");
+      console.log("Message emitted to",user.socketId);
     } else {
       console.log("Receiver user not found");
     }

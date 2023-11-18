@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
-import dayjs from "dayjs";
 import {
   createStyles,
-  UnstyledButton,
   Text,
   Paper,
   Group,
@@ -12,8 +10,7 @@ import {
 
 import { FaUsers } from "react-icons/fa";
 import { BsFillBagHeartFill, BsFillPostcardHeartFill } from "react-icons/bs";
-import { BiArrowToBottom, BiArrowFromBottom } from "react-icons/bi";
-import { Chart } from "../chart/chart";
+import { Chart } from "../chart/Chart";
 import StatsGrid from "../stats/StatsGrid";
 
 import {

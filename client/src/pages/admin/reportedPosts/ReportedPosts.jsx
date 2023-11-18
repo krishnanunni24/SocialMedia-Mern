@@ -1,5 +1,5 @@
 import React from 'react'
-import SideNav from '../../../components/admin/sideNav'
+import SideNav from '../../../components/admin/SideNav'
 import PageWrapper from '../../../components/admin/PageWrapper'
 import ReportsList from "../../../components/admin/reportPost/ReportsList"
 function ReportedPosts() {

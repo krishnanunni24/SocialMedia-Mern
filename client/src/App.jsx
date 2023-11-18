@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import Test from "./pages/test";
 
 import Home from "./pages/user/Home/Home";
 import Auth from "./pages/user/Auth/Auth";
@@ -43,7 +42,6 @@ function App() {
           path="/chat"
           element={user && token ? <ChatPage /> : <Navigate to="../auth" />}
         />
-        <Route path="/testPage" element={<Test />} />
 
         <Route path="/admin" element={<AdminLogin />} />
         <Route

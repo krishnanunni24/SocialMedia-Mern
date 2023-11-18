@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import Home from "./pages/user/Home/Home";
 import Auth from "./pages/user/Auth/Auth";
-import AdminLogin from "./pages/admin/Login/AdminLogin";
+import AdminLogin from "./pages/admin/login/AdminLogin"
 import Dashboard from "./pages/admin/dashboard/Dashboard";
 import ManageUsers from "./pages/admin/ManageUsers/ManageUsers";
 import { useSelector } from "react-redux";
@@ -42,7 +42,7 @@ function App() {
           element={user && token ? <ChatPage /> : <Navigate to="../auth" />}
         />
 
-        <Route path="/admin" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminLogin/>} />
         <Route
           path="/dashboard"
           element={admin && token ? <Dashboard /> : <Navigate to="../admin" />}

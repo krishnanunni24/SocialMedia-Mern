@@ -59,6 +59,7 @@ const ChatComponent = () => {
   useEffect(() => {
     socket.current &&
       socket.current.on("receive-message", (data) => {
+        console.log("message received", data);
         setReceivedMessage(data);
         const chatId = data.chatId;
         setChats((chats) => {
@@ -72,7 +73,6 @@ const ChatComponent = () => {
             return chatUser;
           });
         });
-        console.log("message received", chatId);
       });
   }, [socket]);
 

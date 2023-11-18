@@ -71,7 +71,7 @@ const ChatComponent = () => {
           });
         });
       });
-  }, [socket]);
+  }, []);
 
 
   // Connect to Socket.io

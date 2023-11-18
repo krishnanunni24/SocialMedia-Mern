@@ -51,10 +51,7 @@ const ChatComponent = () => {
     };
   }, []);
 
-  useEffect(()=>{
- console.log("chats:",chats)
-  },[chats])
-
+ 
   
   useEffect(() => {
     socket.current &&

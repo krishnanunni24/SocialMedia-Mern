@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Group, Button } from "@mantine/core";
-import { AiOutlineAlert, AiOutlineClose, AiOutlineCloseCircle, AiOutlineComment, AiOutlineDelete, AiOutlineHeart } from "react-icons/ai";
+import { Modal } from "@mantine/core";
+import {AiOutlineCloseCircle, AiOutlineComment, AiOutlineDelete, AiOutlineHeart } from "react-icons/ai";
 import { FiShare2 } from "react-icons/fi";
-import { Blockquote } from "@mantine/core";
 import DropdownUsers from "./DropDownUsers";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { unListPostAdmin } from "../../../actions/ReportListActions";
-import { toast } from "react-toastify";
 import { BsCheck2All } from "react-icons/bs";
 
 function ReportedPostModal({ handleOnClose, openModal, report }) {

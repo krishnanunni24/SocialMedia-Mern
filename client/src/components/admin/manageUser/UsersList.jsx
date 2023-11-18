@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import DataTableBase from '../dataTable/DataTableBase'
-import { getAllUsers } from '../../../actions/UserListActions'
 
 
 function UsersList() {

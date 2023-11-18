@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Modal, Group, Button } from '@mantine/core';
+import { Modal, Button } from '@mantine/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { reportPost } from '../../../actions/PostActions';
 

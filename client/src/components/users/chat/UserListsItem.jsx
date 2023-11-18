@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getChatNotification } from "../../../api/chatRequests";
+import { getChatNotification } from "../../../api/ChatRequests";
 
 function UserListItem({ user, onUserClick, onlineUsers ,chat,setChats}) {
   const [userOnline, setUserOnline] = useState(false);

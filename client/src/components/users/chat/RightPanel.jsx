@@ -3,7 +3,7 @@ import { AiOutlineSend } from "react-icons/ai";
 import { useSelector } from "react-redux";
 import UserMessage from "../message/userMessage";
 import ReceiverMessage from "../message/ReceiverMessage";
-import { createMessage, fetchMessages } from "../../../api/chatRequests";
+import { createMessage, fetchMessages } from "../../../api/ChatRequests";
 import { BiArrowBack } from "react-icons/bi";
 
 function RightPanel({

@@ -5,7 +5,7 @@ import SearchUser from "./SearchUser";
 import { useSelector } from "react-redux";
 import { io } from "socket.io-client";
 import { SearchFollowingUsers } from "../../../api/UserRequests";
-import { fetchChats, updateMessageStatus } from "../../../api/chatRequests";
+import { fetchChats, updateMessageStatus } from "../../../api/ChatRequests"
 import useThrowAsyncError from "../../../hooks/useThrowAsyncError";
 
 const ChatComponent = () => {

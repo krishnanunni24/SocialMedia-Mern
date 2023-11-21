@@ -96,8 +96,10 @@ export const loginUser = async (req, res) => {
 
 export const adminLogin = async (req, res) => {
   const { email, password } = req.body;
+  console.log(email,password)
   try {
     const admin = await AdminModel.findOne({ email,password });
+    console.log(admin)
       if (!admin) {
         res.status(400).json("Wrong Email or Password");
       } else {

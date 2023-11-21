@@ -30,20 +30,23 @@ function AuthForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate(); 
   const [otpVerify, setOtpVerify] = useState(false);
+  const authLoading = useSelector((state) => state.authReducer.loading);
+
   password.current = watch("password", "");
+
 
   useEffect(() => {
     reset(); // Reset the form on component mount
   }, [reset]);
 
-  useEffect(() => {
-    dispatch({ type: "AUTH_START" });
-    reset();
-  }, []);
+  // useEffect(() => {
+  //   dispatch({ type: "AUTH_START" });
+  //   reset();
+  // }, []);
 
-  useEffect(() => {
-    dispatch({ type: "AUTH_START" });
-  }, [isSignUp]);
+  // useEffect(() => {
+  //   dispatch({ type: "AUTH_START" });
+  // }, [isSignUp]);
 
   // useEffect(()=>{
   //   setGoogleData(null)
@@ -88,6 +91,7 @@ function AuthForm() {
           setGoogleData={setGoogleData}
           isSignUp={isSignUp}
           onFormSubmit={onFormSubmit}
+          loading={authLoading}
         />
       )}
 

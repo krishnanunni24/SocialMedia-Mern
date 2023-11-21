@@ -97,24 +97,19 @@ export const loginUser = async (req, res) => {
 export const adminLogin = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const admin = await AdminModel.findOne({ email });
-    if (admin) {
-      const validity = await bcrypt.compare(password, admin.password);
-      if (!validity) {
-        res.status(400).json("Wrong Password");
+    const admin = await AdminModel.findOne({ email,password });
+      if (!admin) {
+        res.status(400).json("Wrong Email or Password");
       } else {
         const secret = process.env.JWT_SECRET;
         const token = jwt.sign(
           { username: admin.email, id: admin._id },
-
           secret,
           { expiresIn: "1h" }
         );
         res.status(200).json({ admin, token });
       }
-    } else {
-      res.status(400).json("user not found");
-    }
+    
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

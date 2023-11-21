@@ -1,8 +1,10 @@
 import React from "react";
-import "./spinner.css";
 
 export default function LoadingSpinner() {
   return (
-    <div class="loader">Loading...</div>
+    <div
+      class="h-6 w-6 mx-2  animate-spin rounded-full
+                            border-4 border-solid border-primary border-t-transparent shadow-md"
+    ></div>
   );
 }
